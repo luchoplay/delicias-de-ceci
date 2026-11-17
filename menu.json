@@ -3,9 +3,9 @@
   "app": {
     "apk": "Delicias-de-Ceci.apk",
     "nombre": "Delicias Ceci",
-    "versionMinima": 6,
-    "versionUltima": 6,
-    "versionUltimaNombre": "1.5"
+    "versionMinima": 7,
+    "versionUltima": 7,
+    "versionUltimaNombre": "1.6"
   },
   "categorias": [
     {
@@ -54,11 +54,11 @@
   },
   "ejemplo": false,
   "especial": {
-    "detalle": "Hamburguesa + papas + bebida",
+    "detalle": "coca o pepsi + cerveza ",
     "etiqueta": "20%",
     "etiquetaChica": "DE DESCUENTO",
     "producto": "pizza-muzzarella",
-    "titulo": "Combo de hamburguesa picante"
+    "titulo": "Combo de Pizza muzzarella"
   },
   "mensaje": "🍔 *NUEVO PEDIDO · {negocio}*\nPedido N.º {numero}\n\n👤 *Nombre:* {nombre}\n📞 *Teléfono:* {telefono}\n📍 *Dirección:* {direccion}\n🧭 *Referencia:* {referencia}\n\n🛒 *Pedido:*\n{productos}\n\n💰 *TOTAL: {total}*\n🛵 Envío: {envio}\n💳 *Pago:* {pago}\n📝 *Nota:* {nota}",
   "negocio": {
@@ -600,7 +600,7 @@
       "resenas": "214"
     }
   ],
-  "publicado": "2026-11-17 01:23:45",
+  "publicado": "2026-11-17 02:28:37",
   "qr": {
     "sub": "Escaneá el código con la cámara",
     "titulo": "¡Pedí desde tu celular!"

@@ -269,6 +269,9 @@ img.foto-falta { background: var(--card2); }
 .resumen .r { display: flex; justify-content: space-between; padding: 5px 0; color: var(--texto2); }
 .resumen .r.total { margin-top: 6px; padding-top: 12px; border-top: 1px solid var(--borde); color: var(--texto); font-size: 20px; font-weight: 800; font-family: var(--letra-titulos); }
 .resumen .r.total span:last-child { color: var(--acento); }
+.resumen .r.descuento { color: #16a34a; font-weight: 800; }
+:root[data-modo="oscuro"] .resumen .r.descuento { color: #4ade80; }
+.promo-hoy { margin: 0 0 10px; padding: 8px 12px; border-radius: 12px; background: var(--acento-suave); color: var(--texto); font-size: 13.5px; }
 
 /* ───── formularios ───── */
 .campo { margin-bottom: 14px; }
@@ -564,6 +567,76 @@ function precioUnidad(p, tamano, agregados) {
 }
 function subtotal(it) { const p = producto(it.id); return p ? precioUnidad(p, it.tamano, it.agregados) * it.cantidad : 0; }
 function totalCarrito() { return E.carrito.reduce((s, it) => s + subtotal(it), 0); }
+
+// ═════════ PROMOCIONES (las arma el panel; valen según el día y la hora del celular) ═════════
+function ahora() { return window.__ahora ? new Date(window.__ahora) : new Date(); }
+function aMinutos(s) { const m = /^(\d{1,2}):(\d{2})$/.exec(s || ""); return m ? +m[1] * 60 + +m[2] : null; }
+function promoActiva(pr, d = ahora()) {
+  if (!pr || pr.activa === false) return false;
+  if (pr.dias && pr.dias.length && !pr.dias.includes(d.getDay())) return false;
+  const hm = d.getHours() * 60 + d.getMinutes(), desde = aMinutos(pr.desde), hasta = aMinutos(pr.hasta);
+  if (desde !== null && hm < desde) return false;
+  if (hasta !== null && hm > hasta) return false;
+  return (pr.productos || []).some(id => { const p = producto(id); return p && p.visible !== false; });
+}
+function promosHoy() { return (E.menu.promos || []).filter(pr => promoActiva(pr)); }
+function promoDe(id) { return promosHoy().find(pr => (pr.productos || []).includes(id)); }
+function selloPromo(pr) {
+  if (pr.tipo === "nxm") return { grande: `${pr.lleva}x${pr.paga}`, chica: "PROMO" };
+  if (pr.tipo === "porcentaje") return { grande: `${pr.valor}%`, chica: "DE DESCUENTO" };
+  if (pr.tipo === "precio") return { grande: plata(pr.valor), chica: "PRECIO ESPECIAL" };
+  return null;
+}
+function textoPromo(pr) {
+  if (pr.tipo === "nxm") return `Llevá ${pr.lleva} y pagá ${pr.paga}`;
+  if (pr.tipo === "porcentaje") return `${pr.valor}% de descuento`;
+  if (pr.tipo === "precio") return `Precio especial ${plata(pr.valor)}`;
+  return "";
+}
+// precio de UNA unidad sin agregados (precio + tamaño): sobre eso se hacen los descuentos
+function precioBase(it) {
+  const p = producto(it.id), tm = (p.tamanos || []).find(x => x.nombre === it.tamano);
+  return (Number(p.precio) || 0) + (tm ? Number(tm.extra) || 0 : 0);
+}
+function descuentos() {
+  const res = [], usados = new Set();     // cada producto entra en UNA sola promo (la primera de la lista)
+  for (const pr of promosHoy()) {
+    const ids = (pr.productos || []).filter(id => !usados.has(id));
+    ids.forEach(id => usados.add(id));
+    const its = E.carrito.filter(it => ids.includes(it.id) && producto(it.id));
+    if (!its.length) continue;
+    let monto = 0;
+    if (pr.tipo === "porcentaje") {
+      monto = its.reduce((s, it) => s + Math.round(precioBase(it) * (Number(pr.valor) || 0) / 100) * it.cantidad, 0);
+    } else if (pr.tipo === "precio") {
+      monto = its.reduce((s, it) => s + Math.max(0, (Number(producto(it.id).precio) || 0) - (Number(pr.valor) || 0)) * it.cantidad, 0);
+    } else if (pr.tipo === "nxm") {
+      // de cada grupo de «lleva», se regalan los más baratos (lleva − paga); los agregados se cobran
+      const L = Number(pr.lleva) || 0, P = Number(pr.paga) || 0;
+      if (L > P && P >= 1) {
+        const u = [];
+        its.forEach(it => { for (let k = 0; k < it.cantidad; k++) u.push(precioBase(it)); });
+        u.sort((a, b) => b - a);
+        for (let i = 0; i + L <= u.length; i += L) for (let j = i + P; j < i + L; j++) monto += u[j];
+      }
+    }
+    if (monto > 0) res.push({ promo: pr, nombre: pr.nombre || textoPromo(pr), monto });
+  }
+  return res;
+}
+function totalDescuentos() { return descuentos().reduce((s, d) => s + d.monto, 0); }
+function totalAPagar() { return Math.max(0, totalCarrito() - totalDescuentos()) + costoEnvio(); }
+// el Especial de hoy: primero la promo del día marcada «en el Especial»; si no hay, el de siempre
+function especialDeHoy() {
+  const m = E.menu, pr = promosHoy().find(x => x.especial && producto((x.productos || [])[0]));
+  if (pr) return { prod: producto(pr.productos[0]), titulo: pr.titulo || pr.nombre || producto(pr.productos[0]).nombre, detalle: pr.detalle || textoPromo(pr), sello: selloPromo(pr) };
+  const p0 = m.especial && producto(m.especial.producto);
+  if (!p0) return null;
+  const prp = promoDe(p0.id), antes = Number(p0.precioAntes) || 0, ahoraP = Number(p0.precio) || 0;
+  // el sello NUNCA se escribe a mano: sale de una promo de hoy o del «precio antes» del producto
+  const sello = prp ? selloPromo(prp) : antes > ahoraP && antes ? { grande: Math.round((1 - ahoraP / antes) * 100) + "%", chica: "DE DESCUENTO" } : null;
+  return { prod: p0, titulo: m.especial.titulo || p0.nombre, detalle: m.especial.detalle || "", sello };
+}
 function costoEnvio() { return Number(E.menu.negocio.costoEnvio) || 0; }
 function unidades() { return E.carrito.reduce((s, it) => s + it.cantidad, 0); }
 
@@ -644,7 +717,8 @@ function tarjetaHTML(p) {
   return `<article class="tarjeta${p.agotado ? " agotada" : ""}" data-prod="${esc(p.id)}">
     <img class="img" ${fotoAttr(p.foto)} alt="" loading="lazy">
     ${p.agotado ? `<span class="sello-agotado">AGOTADO HOY</span>` : ""}
-    ${p.etiqueta ? `<span class="etiqueta${p.etiqueta === "Más vendido" ? "" : " naranja"}">${esc(p.etiqueta)}</span>` : ""}
+    ${promoDe(p.id) ? `<span class="etiqueta naranja">🎁 ${esc(selloPromo(promoDe(p.id)).grande)}</span>`
+      : p.etiqueta ? `<span class="etiqueta${p.etiqueta === "Más vendido" ? "" : " naranja"}">${esc(p.etiqueta)}</span>` : ""}
     <button class="corazon ${fav ? "si" : ""}" data-fav="${esc(p.id)}" aria-label="Favorito">${SVG_CORAZON}</button>
     <h4>${esc(p.nombre)}</h4>
     <div class="meta">${meta}</div>
@@ -673,15 +747,15 @@ function pintarInicio() {
   $("#bloquePopulares").hidden = !SEC("populares");
   $("#catsInicio").innerHTML = m.categorias.map((c, i) =>
     `<button class="cat${i === 0 ? " elegida" : ""}" data-cat="${esc(c.id)}"><span class="emo">${esc(c.icono)}</span>${esc(c.nombre)}</button>`).join("");
-  const es = SEC("especial") && m.especial && producto(m.especial.producto);
+  const ed = SEC("especial") ? especialDeHoy() : null, es = ed && ed.prod;
   $("#especial").innerHTML = es ? `
     <div class="especial tocable" data-prod="${esc(es.id)}">
       <img class="foto" ${fotoAttr(es.foto)} alt="">
-      ${m.especial.etiqueta ? `<div class="sello"><b>${esc(m.especial.etiqueta)}</b><small>${esc(m.especial.etiquetaChica || "")}</small></div>` : ""}
+      ${ed.sello ? `<div class="sello"><b>${esc(ed.sello.grande)}</b><small>${esc(ed.sello.chica)}</small></div>` : ""}
       <div class="info">
         <div class="chip"><span style="color:var(--acento)">⚡</span> ${esc(T("especialChip"))}</div>
-        <h3>${esc(m.especial.titulo)}</h3>
-        <p>${esc(m.especial.detalle)}</p>
+        <h3>${esc(ed.titulo)}</h3>
+        <p>${esc(ed.detalle)}</p>
         <button class="boton" data-prod="${esc(es.id)}">${esc(T("botonEspecial"))} <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.4" stroke-linecap="round"><path d="M5 12h14m-6-6 6 6-6 6"/></svg></button>
       </div>
     </div><div class="puntos"><i></i><i></i><i></i></div>` : "";
@@ -745,6 +819,7 @@ function abrirProducto(id, sinHistorial) {
         <span style="display:flex;align-items:center;gap:5px"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg>${esc(p.tiempo)}</span>` : ""}
       </div>
       ${p.precioAntes ? `<div style="margin:-2px 0 8px;font-size:13px;color:var(--suave)">Antes <s>${plata(p.precioAntes)}</s> · ahorrás ${plata(p.precioAntes - p.precio)}</div>` : ""}
+      ${promoDe(p.id) ? `<div class="promo-hoy">🎁 Hoy: <b>${esc(textoPromo(promoDe(p.id)))}</b>${promoDe(p.id).tipo === "nxm" ? " (se descuenta solo en el carrito)" : ""}</div>` : ""}
       <p class="desc">${esc(p.descripcion)}</p>
       ${(p.tamanos && p.tamanos.length) || (p.agregados && p.agregados.length) ? `
       <div class="personaliza">
@@ -816,11 +891,12 @@ function pintarCarrito() {
 }
 function textoEnvio() { const env = costoEnvio(); return env ? plata(env) : (E.menu.negocio.textoEnvio || "Gratis"); }
 function resumenHTML() {
-  const sub = totalCarrito(), env = costoEnvio();
+  const sub = totalCarrito();
   return `<div class="resumen">
     <div class="r"><span>Productos (${unidades()})</span><span>${plata(sub)}</span></div>
+    ${descuentos().map(d => `<div class="r descuento"><span>🎁 ${esc(d.nombre)}</span><span>−${plata(d.monto)}</span></div>`).join("")}
     <div class="r"><span>Envío</span><span>${esc(textoEnvio())}</span></div>
-    <div class="r total"><span>Total</span><span id="totalFinal">${plata(sub + env)}</span></div></div>`;
+    <div class="r total"><span>Total</span><span id="totalFinal">${plata(totalAPagar())}</span></div></div>`;
 }
 
 // ═════════ ENTREGA ═════════
@@ -871,13 +947,20 @@ function armarMensaje(ahora = new Date()) {
     fecha: `${dos(ahora.getDate())}/${dos(ahora.getMonth() + 1)}/${ahora.getFullYear()} ${dos(ahora.getHours())}:${dos(ahora.getMinutes())}`,
     nombre: f.nombre, telefono: f.telefono, direccion: f.direccion, referencia: f.referencia,
     productos: lineasProductos(), subtotal: plata(totalCarrito()), envio: textoEnvio(),
-    total: plata(totalCarrito() + costoEnvio()),
+    total: plata(totalAPagar()),
+    promos: descuentos().map(d => `🎁 ${d.nombre}: −${plata(d.monto)}`).join("\n"),
     pago: (pagos().find(p => p.id === f.pago) || {}).nombre || "", nota: f.nota,
     fechaMenu: fechaMenu(),
   };
   let plantilla = E.menu.mensaje || PLANTILLA;
   // siempre se ve con qué menú pidió (para detectar precios viejos), salvo que la plantilla ya lo ponga
   if (!plantilla.includes("{fechaMenu}")) plantilla += "\n🗓️ Menú del {fechaMenu}";
+  // los descuentos van justo antes del total (si la plantilla no los ubica en otro lado)
+  if (!plantilla.includes("{promos}")) {
+    const r = plantilla.split("\n"), i = r.findIndex(x => x.includes("{total}"));
+    if (i >= 0) r.splice(i, 0, "{promos}"); else r.push("{promos}");
+    plantilla = r.join("\n");
+  }
   // un renglón con un dato vacío (por ejemplo, sin nota) se saca entero
   return plantilla.split("\n").filter(r => !/\{(\w+)\}/.test(r) || [...r.matchAll(/\{(\w+)\}/g)].every(m => !(m[1] in v) || String(v[m[1]]).trim()))
     .map(r => r.replace(/\{(\w+)\}/g, (t, k) => k in v ? v[k] : t)).join("\n").replace(/\n{3,}/g, "\n\n").trim();
@@ -990,9 +1073,10 @@ $("#btnMenu").onclick = abrirLateral;
 $("#btnAvatar").onclick = () => tab("perfil");
 $("#btnUbicacion").onclick = () => tab("perfil");
 $("#btnAvisos").onclick = () => {
-  const m = E.menu, es = m.especial;
+  const m = E.menu, ed = especialDeHoy();
   abrirHoja(`<h3>Avisos</h3>
-    ${es && producto(es.producto) ? `<button class="opcion" data-prod="${esc(es.producto)}"><span class="emo">⚡</span><span><b>${esc(T("especialChip"))}</b><br><small>${esc(es.titulo)} · ${esc(es.etiqueta || "")} ${esc((es.etiquetaChica || "").toLowerCase())}</small></span></button>` : ""}
+    ${ed ? `<button class="opcion" data-prod="${esc(ed.prod.id)}"><span class="emo">⚡</span><span><b>${esc(T("especialChip"))}</b><br><small>${esc(ed.titulo)}${ed.sello ? ` · ${esc(ed.sello.grande)} ${esc(ed.sello.chica.toLowerCase())}` : ""}</small></span></button>` : ""}
+    ${promosHoy().filter(pr => !ed || pr.productos[0] !== ed.prod.id).map(pr => `<button class="opcion" data-prod="${esc(pr.productos[0])}"><span class="emo">🎁</span><span><b>${esc(pr.nombre || textoPromo(pr))}</b><br><small>${esc(textoPromo(pr))} · solo hoy</small></span></button>`).join("")}
     <div class="opcion"><span class="emo">🛵</span><span><b>Entrega</b><br><small>Tiempo estimado ${esc(m.negocio.tiempoEntrega || "")}</small></span></div>
     <div class="opcion"><span class="emo">🔒</span><span><b>Tus datos</b><br><small>Se guardan solo en tu celular</small></span></div>`);
   $(".campana .punto").style.display = "none";
@@ -1110,7 +1194,7 @@ document.addEventListener("visibilitychange", () => {
 function fotoCarrito() { return E.carrito.map(it => ({ clave: it.clave, nombre: (producto(it.id) || {}).nombre, unidad: producto(it.id) ? precioUnidad(producto(it.id), it.tamano, it.agregados) : null })); }
 async function preciosAlDia() {
   if (VISTA || window.__sinRevisar) return true;
-  const antes = fotoCarrito();
+  const antes = fotoCarrito(), totalAntes = totalAPagar();
   const ok = await refrescarMenu();
   if (!ok) {
     return dialogoSiNo(`<h3>No pudimos confirmar los precios</h3><p>No hay conexión. Si enviás igual, el pedido sale con los precios del menú del <b>${esc(fechaMenu())}</b> y te los confirman por WhatsApp.</p>`, "Enviar igual", "Cancelar");
@@ -1122,6 +1206,7 @@ async function preciosAlDia() {
     if (!d || d.unidad === null) cambios.push(`«${a.nombre}» ya no está disponible`);
     else if (d.unidad !== a.unidad) cambios.push(`«${a.nombre}»: ${plata(a.unidad)} → <b>${plata(d.unidad)}</b>`);
   }
+  if (!cambios.length && totalAPagar() !== totalAntes) cambios.push(`Cambió una promoción: el total pasó de ${plata(totalAntes)} a <b>${plata(totalAPagar())}</b>`);
   if (!cambios.length) return true;
   tab("carrito");
   abrirHoja(`<h3>Los precios se actualizaron</h3><p>Antes de enviar, revisá tu carrito:</p><ul style="color:var(--texto2);line-height:1.6">${cambios.map(c => `<li>${c}</li>`).join("")}</ul><button class="boton ancho" data-cerrar>Revisar el carrito</button>`);
@@ -1181,7 +1266,7 @@ window.addEventListener("message", ev => {
   }
   if (m.tipo === "modo") { E.modo = m.modo; aplicarDiseno(); }
 });
-window.Ceci = { E, armarMensaje, precioUnidad, totalCarrito, plata, refrescarMenu, fechaMenu };
+window.Ceci = { E, armarMensaje, precioUnidad, totalCarrito, plata, refrescarMenu, fechaMenu, descuentos, totalAPagar, promosHoy, especialDeHoy };
 arrancar();
 </script>
 </body>
