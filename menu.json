@@ -1,7 +1,11 @@
 {
   "_LEEME": "Lo edita el Panel de Delicias de Ceci (Escritorio). Si lo tocás a mano, cuidá las comas. EJEMPLO hasta cargar el menú real.",
   "app": {
-    "nombre": "Delicias Ceci"
+    "nombre": "Delicias Ceci",
+    "apk": "Delicias-de-Ceci.apk",
+    "versionUltima": 6,
+    "versionUltimaNombre": "1.5",
+    "versionMinima": 6
   },
   "categorias": [
     {
@@ -569,7 +573,7 @@
       "visible": true
     }
   ],
-  "publicado": "2026-11-17 00:02:48",
+  "publicado": "2026-11-17 00:28:06",
   "secciones": {
     "buscador": true,
     "categorias": true,

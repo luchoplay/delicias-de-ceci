@@ -319,6 +319,11 @@ img.foto-falta { background: var(--card2); }
 .aviso { position: fixed; left: 50%; bottom: 100px; z-index: 60; transform: translate(-50%, 30px); opacity: 0; padding: 12px 18px; border-radius: 16px; background: var(--card2); color: var(--texto); border: 1px solid var(--borde); box-shadow: var(--sombra); font-size: 14px; max-width: 86%; text-align: center; transition: all .3s ease; pointer-events: none; }
 .aviso.ver { opacity: 1; transform: translate(-50%, 0); }
 
+#actualizar { position: fixed; inset: 0; z-index: 90; display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center; padding: 30px; background: radial-gradient(circle at 50% 35%, color-mix(in srgb, var(--acento) 16%, var(--bg)), var(--bg) 70%); }
+#actualizar img { width: 120px; height: 120px; border-radius: 30px; margin-bottom: 20px; box-shadow: 0 12px 40px var(--acento-sombra); }
+#actualizar h1 { margin: 0 0 10px; font-size: 26px; font-weight: 800; }
+#actualizar p { color: var(--texto2); line-height: 1.5; margin: 0 0 22px; max-width: 340px; }
+#actualizar .nota-chica { margin-top: 14px; min-height: 18px; }
 #bienvenida { position: fixed; inset: 0; z-index: 100; display: grid; place-content: center; text-align: center; background: radial-gradient(circle at 50% 40%, color-mix(in srgb, var(--acento) 18%, var(--bg)), var(--bg) 70%); transition: opacity .5s ease, visibility 0s .5s; }
 #bienvenida.fuera { opacity: 0; visibility: hidden; }
 #bienvenida img { width: 140px; height: 140px; border-radius: 36px; margin: 0 auto 20px; box-shadow: 0 12px 40px var(--acento-sombra); animation: entrada .9s cubic-bezier(.2,1.3,.4,1) both; }
@@ -370,6 +375,8 @@ img.foto-falta { background: var(--card2); }
   <div class="categorias" id="catsInicio"></div>
   <div id="especial"></div>
   <div class="aviso-ejemplo" id="avisoEjemplo" hidden></div>
+  <div class="aviso-ejemplo" id="avisoConexion" hidden></div>
+  <button class="aviso-ejemplo tocable" id="avisoVersion" hidden style="width:100%;text-align:left">✨ Hay una versión nueva de la app. <b>Tocá para actualizar</b></button>
 
   <div id="bloquePopulares">
     <div class="seccion"><h2 id="txtPopulares"></h2><button class="tocable" data-ir="explorar" id="txtVerTodo"></button></div>
@@ -479,6 +486,15 @@ img.foto-falta { background: var(--card2); }
   <button data-tab="favoritos"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M12 20.5s-8-4.8-8-11A4.5 4.5 0 0 1 12 6.6a4.5 4.5 0 0 1 8 2.9c0 6.2-8 11-8 11z"/></svg>Favoritos</button>
   <button data-tab="perfil"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="8" r="4"/><path d="M4 21a8 8 0 0 1 16 0"/></svg>Perfil</button>
 </nav>
+
+<!-- ═════════ ACTUALIZACIÓN OBLIGATORIA ═════════ -->
+<div id="actualizar" hidden>
+  <img src="fotos/logo.png" alt="">
+  <h1>Hay una versión nueva</h1>
+  <p>Para seguir pidiendo con los precios y productos al día, actualizá la app. Tarda unos segundos y no perdés tu carrito ni tus datos.</p>
+  <button class="boton ancho" id="btnActualizar">Actualizar ahora</button>
+  <p class="nota-chica" id="estadoActualizar"></p>
+</div>
 
 <div class="velo" id="velo"></div>
 <div class="hoja" id="hoja"><div class="asa"></div><div id="hojaCuerpo"></div></div>
@@ -857,8 +873,11 @@ function armarMensaje(ahora = new Date()) {
     productos: lineasProductos(), subtotal: plata(totalCarrito()), envio: textoEnvio(),
     total: plata(totalCarrito() + costoEnvio()),
     pago: (pagos().find(p => p.id === f.pago) || {}).nombre || "", nota: f.nota,
+    fechaMenu: fechaMenu(),
   };
-  const plantilla = E.menu.mensaje || PLANTILLA;
+  let plantilla = E.menu.mensaje || PLANTILLA;
+  // siempre se ve con qué menú pidió (para detectar precios viejos), salvo que la plantilla ya lo ponga
+  if (!plantilla.includes("{fechaMenu}")) plantilla += "\n🗓️ Menú del {fechaMenu}";
   // un renglón con un dato vacío (por ejemplo, sin nota) se saca entero
   return plantilla.split("\n").filter(r => !/\{(\w+)\}/.test(r) || [...r.matchAll(/\{(\w+)\}/g)].every(m => !(m[1] in v) || String(v[m[1]]).trim()))
     .map(r => r.replace(/\{(\w+)\}/g, (t, k) => k in v ? v[k] : t)).join("\n").replace(/\n{3,}/g, "\n\n").trim();
@@ -881,7 +900,7 @@ function abrirWhatsApp(texto) {
   }
   return true;
 }
-function enviarPedido() {
+async function enviarPedido() {
   leerFormulario();
   const malos = validar();
   guardar("perfil", E.perfil);
@@ -892,6 +911,10 @@ function enviarPedido() {
   }
   if (limpiarCarrito()) { actualizarContador(); aviso("Algo de tu carrito se agotó: revisalo"); tab("carrito"); return; }
   if (!E.carrito.length) { aviso("Tu carrito está vacío"); return; }
+  const b = $("#btnEnviar"); b.disabled = true; $("#txtEnviar").textContent = "Revisando precios…";
+  let seguir = false;
+  try { seguir = await preciosAlDia(); } finally { b.disabled = false; $("#txtEnviar").textContent = T("botonEnviar") || "Enviar pedido"; }
+  if (!seguir || !E.carrito.length) return;
   E.ultimoMensaje = armarMensaje();
   pintarCabecera();
   $("#aviso").classList.remove("ver");
@@ -1010,6 +1033,8 @@ document.addEventListener("click", ev => {
   }
 });
 $("#btnEnviar").onclick = enviarPedido;
+$("#btnActualizar").onclick = actualizarApp;
+$("#avisoVersion").onclick = actualizarApp;
 $("#btnReabrir").onclick = () => abrirWhatsApp(E.ultimoMensaje);
 $("#btnYaEnvie").onclick = () => { E.carrito = []; guardar("carrito", []); actualizarContador(); tab("inicio"); aviso(T("gracias") || "¡Gracias!"); };
 ["fNombre", "fTelefono", "fDireccion", "fReferencia", "fNota"].forEach(id =>
@@ -1027,6 +1052,8 @@ matchMedia("(prefers-color-scheme: light)").addEventListener("change", () => E.m
 // ═════════ CARGAR EL MENÚ ═════════
 function conTiempo(promesa, ms) { return Promise.race([promesa, new Promise((_, no) => setTimeout(() => no(new Error("tiempo")), ms))]); }
 async function bajarJSON(url) { const r = await conTiempo(fetch(url, { cache: "no-store" }), 8000); if (!r.ok) throw new Error(r.status); return r.json(); }
+const MI_VERSION = NATIVO && window.CeciApp.versionCodigo ? Number(window.CeciApp.versionCodigo()) || 0 : 0;
+let ultimaRevision = 0;
 function usarMenu(m, base) {
   E.menu = m; E.base = base || "";
   limpiarCarrito();
@@ -1034,21 +1061,93 @@ function usarMenu(m, base) {
   const v = E.historial[E.historial.length - 1];
   if (v === "producto" && E.prod && producto(E.prod.id)) abrirProducto(E.prod.id, true);
   else mostrar(v === "producto" ? "inicio" : v);
+  revisarVersion();
+}
+// de dónde sale el menú publicado más nuevo
+function urlMenuNuevo() {
+  if (PARAMS.get("menu")) return PARAMS.get("menu");
+  return (NATIVO ? BUZON : "") + "menu.json?t=" + Date.now();
+}
+// trae el menú publicado; si es distinto lo usa. Devuelve true si pudo confirmarlo con internet.
+async function refrescarMenu() {
+  try {
+    const nuevo = await bajarJSON(urlMenuNuevo());
+    ultimaRevision = Date.now();
+    E.sinConexion = false;
+    if (JSON.stringify(nuevo) !== JSON.stringify(E.menu)) {
+      if (NATIVO) guardar("menuPublicado", nuevo);
+      usarMenu(nuevo, NATIVO ? BUZON : "");
+    }
+    pintarConexion();
+    return true;
+  } catch (e) { E.sinConexion = true; pintarConexion(); return false; }
+}
+function fechaMenu() {
+  const p = (E.menu && E.menu.publicado) || "";
+  const m = p.match(/^(\d{4})-(\d{2})-(\d{2}) (\d{2}):(\d{2})/);
+  return m ? `${m[3]}/${m[2]} ${m[4]}:${m[5]}` : "sin publicar";
+}
+function pintarConexion() {
+  const b = $("#avisoConexion"); if (!b) return;
+  b.hidden = !E.sinConexion;
+  b.textContent = `📡 Sin conexión: los precios pueden no estar al día (menú del ${fechaMenu()}).`;
 }
 async function cargarMenu() {
   if (PARAMS.get("menu")) return usarMenu(await bajarJSON(PARAMS.get("menu")));
-  if (location.protocol.startsWith("http")) return usarMenu(await bajarJSON("menu.json?t=" + Date.now()));
+  if (!NATIVO) { usarMenu(await bajarJSON("menu.json?t=" + Date.now())); ultimaRevision = Date.now(); return; }
   // APK: arranca con el último menú publicado que bajó (o el que trae adentro) y busca uno nuevo
   const local = JSON.parse(window.CeciApp.leerMenu());
   const guardado = leer("menuPublicado", null);
   if (guardado && (guardado.publicado || "") > (local.publicado || "")) usarMenu(guardado, BUZON); else usarMenu(local, "");
-  try {
-    const nuevo = await bajarJSON(BUZON + "menu.json?t=" + Date.now());
-    if ((nuevo.publicado || "") >= (local.publicado || "") && JSON.stringify(nuevo) !== JSON.stringify(E.menu)) {
-      guardar("menuPublicado", nuevo); usarMenu(nuevo, BUZON);
-    }
-  } catch (e) { /* sin internet o buzón todavía sin crear: sigue con lo que tiene */ }
+  refrescarMenu();   // sin internet o sin buzón: sigue con lo que tiene y avisa
 }
+// al volver a la app (estaba en segundo plano): si pasó más de 1 minuto, revisa si hay menú nuevo
+document.addEventListener("visibilitychange", () => {
+  if (document.visibilityState === "visible" && E.menu && !VISTA && Date.now() - ultimaRevision > 60000) refrescarMenu();
+});
+
+// ═════════ PRECIOS AL DÍA ANTES DE ENVIAR ═════════
+function fotoCarrito() { return E.carrito.map(it => ({ clave: it.clave, nombre: (producto(it.id) || {}).nombre, unidad: producto(it.id) ? precioUnidad(producto(it.id), it.tamano, it.agregados) : null })); }
+async function preciosAlDia() {
+  if (VISTA || window.__sinRevisar) return true;
+  const antes = fotoCarrito();
+  const ok = await refrescarMenu();
+  if (!ok) {
+    return dialogoSiNo(`<h3>No pudimos confirmar los precios</h3><p>No hay conexión. Si enviás igual, el pedido sale con los precios del menú del <b>${esc(fechaMenu())}</b> y te los confirman por WhatsApp.</p>`, "Enviar igual", "Cancelar");
+  }
+  const despues = fotoCarrito();
+  const cambios = [];
+  for (const a of antes) {
+    const d = despues.find(x => x.clave === a.clave);
+    if (!d || d.unidad === null) cambios.push(`«${a.nombre}» ya no está disponible`);
+    else if (d.unidad !== a.unidad) cambios.push(`«${a.nombre}»: ${plata(a.unidad)} → <b>${plata(d.unidad)}</b>`);
+  }
+  if (!cambios.length) return true;
+  tab("carrito");
+  abrirHoja(`<h3>Los precios se actualizaron</h3><p>Antes de enviar, revisá tu carrito:</p><ul style="color:var(--texto2);line-height:1.6">${cambios.map(c => `<li>${c}</li>`).join("")}</ul><button class="boton ancho" data-cerrar>Revisar el carrito</button>`);
+  return false;
+}
+function dialogoSiNo(html, si, no) {
+  return new Promise(res => {
+    abrirHoja(`${html}<button class="boton ancho" id="dlgSi">${esc(si)}</button><div style="height:8px"></div><button class="boton ancho gris" id="dlgNo">${esc(no)}</button>`);
+    $("#dlgSi").onclick = () => { cerrarHojas(); res(true); };
+    $("#dlgNo").onclick = () => { cerrarHojas(); res(false); };
+  });
+}
+
+// ═════════ VERSIÓN NUEVA DE LA APP ═════════
+function revisarVersion() {
+  if (!NATIVO || !MI_VERSION || !E.menu || !E.menu.app) return;
+  const a = E.menu.app, minima = Number(a.versionMinima) || 0, ultima = Number(a.versionUltima) || 0;
+  $("#actualizar").hidden = !(minima > MI_VERSION);
+  $("#avisoVersion").hidden = minima > MI_VERSION || !(ultima > MI_VERSION);
+}
+function actualizarApp() {
+  const archivo = (E.menu.app && E.menu.app.apk) || "Delicias-de-Ceci.apk";
+  $("#estadoActualizar").textContent = "Bajando la versión nueva…";
+  window.CeciApp.actualizar(BUZON + archivo + "?t=" + Date.now());
+}
+window.ceciActualizacion = txt => { const e = $("#estadoActualizar"); if (e) e.textContent = txt; aviso(txt); };
 async function arrancar() {
   E.carrito = leer("carrito", []);
   E.favs = new Set(leer("favs", []));
@@ -1082,7 +1181,7 @@ window.addEventListener("message", ev => {
   }
   if (m.tipo === "modo") { E.modo = m.modo; aplicarDiseno(); }
 });
-window.Ceci = { E, armarMensaje, precioUnidad, totalCarrito, plata };
+window.Ceci = { E, armarMensaje, precioUnidad, totalCarrito, plata, refrescarMenu, fechaMenu };
 arrancar();
 </script>
 </body>
