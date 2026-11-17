@@ -1,11 +1,11 @@
 {
   "_LEEME": "Lo edita el Panel de Delicias de Ceci (Escritorio). Si lo tocás a mano, cuidá las comas. EJEMPLO hasta cargar el menú real.",
   "app": {
-    "nombre": "Delicias Ceci",
     "apk": "Delicias-de-Ceci.apk",
+    "nombre": "Delicias Ceci",
+    "versionMinima": 6,
     "versionUltima": 6,
-    "versionUltimaNombre": "1.5",
-    "versionMinima": 6
+    "versionUltimaNombre": "1.5"
   },
   "categorias": [
     {
@@ -571,9 +571,36 @@
       ],
       "tiempo": "5 min",
       "visible": true
+    },
+    {
+      "id": "producto-nuevo",
+      "categoria": "bebidas",
+      "nombre": "Cerveza Brahama",
+      "descripcion": "",
+      "precio": 89,
+      "foto": "fotos/cerveza-brahama-003353.jpg",
+      "tiempo": "",
+      "popular": true,
+      "agotado": false,
+      "visible": true,
+      "tamanos": [
+        {
+          "nombre": "LATA",
+          "extra": 89
+        }
+      ],
+      "agregados": [],
+      "precioAntes": 105,
+      "etiqueta": "Más vendido",
+      "estrellas": "4.9",
+      "resenas": "214"
     }
   ],
-  "publicado": "2026-11-17 00:28:06",
+  "publicado": "2026-11-17 00:42:09",
+  "qr": {
+    "sub": "Escaneá el código con la cámara",
+    "titulo": "¡Pedí desde tu celular!"
+  },
   "secciones": {
     "buscador": true,
     "categorias": true,
@@ -596,9 +623,5 @@
     "saludo": "Hola Gloton/a",
     "titulo": "Buena comida \n¡Delicias de *Ceci la Panadera!*",
     "verTodo": "Ver todo"
-  },
-  "qr": {
-    "titulo": "¡Pedí desde tu celular!",
-    "sub": "Escaneá el código con la cámara"
   }
 }
