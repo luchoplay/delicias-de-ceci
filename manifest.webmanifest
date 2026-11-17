@@ -1,0 +1,12 @@
+{
+  "name": "Delicias de Ceci",
+  "short_name": "Delicias de Ceci",
+  "start_url": "./",
+  "display": "standalone",
+  "background_color": "#0c0c0e",
+  "theme_color": "#0c0c0e",
+  "orientation": "portrait",
+  "icons": [
+    { "src": "fotos/logo.png", "sizes": "512x512", "type": "image/png", "purpose": "any" }
+  ]
+}

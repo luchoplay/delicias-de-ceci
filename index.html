@@ -1,0 +1,1089 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#0c0c0e">
+<title>Delicias de Ceci</title>
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="icon" href="fotos/logo.png">
+<link rel="apple-touch-icon" href="fotos/logo.png">
+<style id="estiloLetras"></style>
+<style>
+/* ═════════ colores: oscuro (de fábrica) y claro ═════════ */
+:root {
+  --acento: #ff7a18;
+  --acento2: #ffa040;
+  --acento-sombra: rgba(255,122,24,.4);
+  --acento-suave: rgba(255,122,24,.12);
+  --letra-titulos: "Poppins", system-ui, sans-serif;
+  --letra-texto: "Poppins", system-ui, sans-serif;
+  --escala: 1;
+  --radio: 22px;
+}
+:root, :root[data-modo="oscuro"] {
+  --bg: #0c0c0e;
+  --card: #19191d;
+  --card-a: #212126;
+  --card2: #232328;
+  --borde: rgba(255,255,255,.07);
+  --borde2: #34343b;
+  --vidrio: rgba(255,255,255,.06);
+  --texto: #f6f6f7;
+  --texto2: #d0d0d6;
+  --suave: #a3a3ad;
+  --barra: rgba(30,30,34,.92);
+  --hoja: #1b1b1f;
+  --esp1: #2a1d14; --esp2: #1d1a19; --esp3: #2b1a0e; --esp-texto: #fff; --esp-sub: #d6cbc2;
+  --sombra: 0 10px 30px rgba(0,0,0,.45);
+  --brillo: .22;
+  --interruptor: #4a4a52;
+  --cat-texto: #e3e3e8;
+}
+:root[data-modo="claro"] {
+  --bg: #f7f3ee;
+  --card: #ffffff;
+  --card-a: #ffffff;
+  --card2: #f1ebe4;
+  --borde: rgba(60,40,20,.08);
+  --borde2: #e3dbd2;
+  --vidrio: rgba(60,40,20,.05);
+  --texto: #1f1a16;
+  --texto2: #4b443e;
+  --suave: #857c74;
+  --barra: rgba(255,255,255,.94);
+  --hoja: #ffffff;
+  --esp1: #fff3e6; --esp2: #ffe9d4; --esp3: #ffdcbc; --esp-texto: #2a1606; --esp-sub: #6e4a2c;
+  --sombra: 0 10px 26px rgba(80,50,20,.12);
+  --brillo: .14;
+  --interruptor: #d7d0c8;
+  --cat-texto: #3a332d;
+}
+* { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+[hidden] { display: none !important; }
+html, body { margin: 0; height: 100%; overflow: hidden; }
+body {
+  position: fixed; inset: 0;
+  background: var(--bg); color: var(--texto);
+  font-family: var(--letra-texto);
+  font-size: calc(15px * var(--escala));
+  user-select: none;
+  transition: background .3s ease, color .3s ease;
+}
+h1, h2, h3, h4, .titulo, .precio, .boton, b, strong { font-family: var(--letra-titulos); }
+button, input, textarea { font: inherit; color: inherit; }
+button { border: 0; background: none; padding: 0; cursor: pointer; }
+img { display: block; }
+img.foto-falta { background: var(--card2); }
+
+.brillo {
+  position: fixed; inset: 0; pointer-events: none; z-index: 0; opacity: calc(var(--brillo) / .22);
+  background:
+    radial-gradient(420px 260px at 105% 4%, color-mix(in srgb, var(--acento) 22%, transparent), transparent 70%),
+    radial-gradient(360px 300px at -15% 46%, color-mix(in srgb, var(--acento) 14%, transparent), transparent 70%),
+    radial-gradient(500px 300px at 50% 120%, color-mix(in srgb, var(--acento) 10%, transparent), transparent 70%);
+}
+
+/* ───── pantallas ───── */
+.pantalla {
+  position: absolute; inset: 0; z-index: 1;
+  overflow-y: auto; overflow-x: hidden;
+  padding: 14px 18px 110px;
+  opacity: 0; visibility: hidden; transform: translateX(24px);
+  transition: opacity .28s ease, transform .28s ease, visibility 0s .28s;
+  scrollbar-width: none;
+}
+.pantalla::-webkit-scrollbar { display: none; }
+.pantalla.activa { opacity: 1; visibility: visible; transform: none; transition: opacity .28s ease, transform .28s ease; }
+.pantalla.sin-barra { padding-bottom: 120px; }
+.tocable { transition: transform .15s ease, filter .15s ease; }
+.tocable:active { transform: scale(.94); filter: brightness(1.1); }
+
+/* ───── cabecera ───── */
+.cabecera { display: flex; align-items: center; gap: 10px; }
+.redondo { width: 44px; height: 44px; border-radius: 50%; background: var(--vidrio); border: 1px solid var(--borde); display: grid; place-items: center; flex: none; }
+.redondo svg { width: 22px; height: 22px; }
+.ubicacion { flex: 1; min-width: 0; display: flex; align-items: center; justify-content: center; gap: 6px; font-size: 14px; }
+.ubicacion span { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.ubicacion svg { flex: none; }
+.campana { position: relative; }
+.campana .punto { position: absolute; top: 9px; right: 10px; width: 9px; height: 9px; border-radius: 50%; background: var(--acento); box-shadow: 0 0 0 2px var(--bg); }
+.avatar { width: 48px; height: 48px; border-radius: 50%; background: linear-gradient(140deg, var(--acento2), var(--acento)); display: grid; place-items: center; font-weight: 800; font-size: 18px; color: #1a0d00; box-shadow: 0 0 0 3px var(--vidrio); }
+
+.saludo { margin: 18px 0 2px; font-size: 1.2em; color: var(--texto2); }
+.titulo { margin: 0; font-size: 2.45em; line-height: 1.08; font-weight: 800; letter-spacing: -.5px; }
+.titulo em, #bienvenida h1 em { font-style: normal; color: var(--acento); }
+.bajada { margin: 8px 0 16px; color: var(--texto2); font-size: .97em; line-height: 1.4; }
+
+.buscador { display: flex; align-items: center; gap: 10px; height: 54px; padding: 0 8px 0 18px; border-radius: 30px; background: var(--vidrio); border: 1px solid var(--borde2); }
+.buscador input { flex: 1; min-width: 0; background: none; border: 0; outline: none; font-size: 15px; user-select: text; }
+.buscador input::placeholder { color: var(--suave); }
+.buscador .filtro { width: 40px; height: 40px; display: grid; place-items: center; border-radius: 50%; }
+.buscador svg { stroke: var(--texto2); }
+
+.categorias { display: flex; gap: 10px; overflow-x: auto; margin: 18px -18px 0; padding: 4px 18px 6px; scrollbar-width: none; }
+.categorias::-webkit-scrollbar { display: none; }
+.cat { flex: none; width: 80px; height: 96px; border-radius: 20px; background: var(--card); border: 1px solid var(--borde); display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 6px; font-size: 12.5px; color: var(--cat-texto); transition: transform .15s ease, background .25s ease, box-shadow .25s ease; text-align: center; line-height: 1.1; padding: 0 4px; }
+.cat .emo { font-size: 34px; line-height: 1; filter: drop-shadow(0 4px 6px rgba(0,0,0,.35)); }
+.cat.elegida { background: linear-gradient(170deg, var(--acento2), var(--acento) 70%); color: #fff; box-shadow: 0 8px 22px var(--acento-sombra); font-weight: 800; }
+.cat:active { transform: scale(.93); }
+
+.especial { position: relative; margin-top: 16px; border-radius: 26px; overflow: hidden; background: linear-gradient(120deg, var(--esp1) 0%, var(--esp2) 55%, var(--esp3) 100%); border: 1px solid color-mix(in srgb, var(--acento) 22%, transparent); min-height: 210px; box-shadow: var(--sombra); color: var(--esp-texto); }
+.especial .foto { position: absolute; right: -36px; bottom: 0; width: 76%; height: 100%; object-fit: cover; object-position: 30% center; -webkit-mask-image: linear-gradient(90deg, transparent 0%, #000 38%); mask-image: linear-gradient(90deg, transparent 0%, #000 38%); }
+.especial .info { position: relative; padding: 18px 18px 18px 20px; max-width: 66%; }
+.especial .chip { display: flex; align-items: center; gap: 6px; font-size: 13px; color: var(--esp-sub); }
+.especial h3 { margin: 6px 0 4px; font-size: 1.55em; line-height: 1.15; font-weight: 800; }
+.especial p { margin: 0 0 14px; font-size: 12.5px; color: var(--esp-sub); }
+.boton { display: inline-flex; align-items: center; justify-content: center; gap: 8px; height: 46px; padding: 0 22px; border-radius: 26px; background: linear-gradient(180deg, var(--acento2), var(--acento)); color: #fff; font-weight: 800; font-size: 15px; box-shadow: 0 8px 20px var(--acento-sombra); transition: transform .15s ease, filter .15s ease; }
+.boton:active { transform: scale(.95); filter: brightness(1.1); }
+.boton.ancho { width: 100%; height: 56px; font-size: 16px; }
+.boton.gris { background: var(--card2); box-shadow: none; color: var(--texto); }
+.boton[disabled] { opacity: .45; pointer-events: none; }
+.sello { position: absolute; top: 12px; right: 12px; width: 82px; height: 82px; border-radius: 50%; background: radial-gradient(circle at 35% 30%, var(--acento2), var(--acento) 70%); display: grid; place-content: center; text-align: center; color: #3a1700; box-shadow: 0 6px 18px var(--acento-sombra); animation: latido 2.4s ease-in-out infinite; }
+.sello b { font-size: 24px; line-height: 1; font-weight: 800; }
+.sello small { font-size: 8.5px; font-weight: 800; line-height: 1.1; }
+@keyframes latido { 50% { transform: scale(1.06) rotate(-4deg); } }
+.puntos { display: flex; justify-content: center; gap: 6px; margin-top: 10px; }
+.puntos i { width: 6px; height: 6px; border-radius: 4px; background: var(--borde2); }
+.puntos i:first-child { width: 18px; background: var(--acento); }
+
+.seccion { display: flex; align-items: baseline; justify-content: space-between; margin: 20px 0 12px; }
+.seccion h2 { margin: 0; font-size: 1.33em; font-weight: 800; }
+.seccion button { color: var(--texto2); font-size: 14px; }
+
+.fila { display: flex; gap: 12px; overflow-x: auto; margin: 0 -18px; padding: 0 18px 8px; scrollbar-width: none; }
+.fila::-webkit-scrollbar { display: none; }
+.grilla { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+.tarjeta { position: relative; flex: none; width: 168px; border-radius: 22px; padding: 10px 12px 12px; background: linear-gradient(180deg, var(--card-a), var(--card)); border: 1px solid var(--borde); box-shadow: var(--sombra); transition: transform .15s ease; animation: aparecer .4s ease both; }
+.grilla .tarjeta { width: auto; }
+.tarjeta:active { transform: scale(.97); }
+.tarjeta .img { width: 100%; aspect-ratio: 1.15; object-fit: cover; border-radius: 16px; }
+.tarjeta h4 { margin: 8px 0 2px; font-size: 15px; line-height: 1.22; font-weight: 400; min-height: 37px; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; font-family: var(--letra-texto); }
+.tarjeta .meta { font-size: 12px; color: var(--suave); display: flex; align-items: center; gap: 4px; }
+.tarjeta .pie { display: flex; align-items: center; justify-content: space-between; margin-top: 6px; }
+.tarjeta .precio { font-size: 19px; font-weight: 800; }
+.tarjeta .antes { font-size: 12px; color: var(--suave); text-decoration: line-through; margin-left: 4px; font-weight: 400; }
+.tarjeta.agotada .img { filter: grayscale(1) brightness(.8); }
+.tarjeta.agotada .mas { display: none; }
+.sello-agotado { position: absolute; left: 22px; right: 22px; top: 62px; text-align: center; padding: 6px; border-radius: 10px; background: rgba(0,0,0,.72); color: #fff; font-weight: 800; font-size: 13px; letter-spacing: .5px; }
+.mas { width: 38px; height: 38px; border-radius: 12px; display: grid; place-items: center; background: linear-gradient(180deg, var(--acento2), var(--acento)); color: #fff; box-shadow: 0 6px 14px var(--acento-sombra); transition: transform .15s ease; }
+.mas:active { transform: scale(.85) rotate(90deg); }
+.corazon { position: absolute; top: 16px; right: 18px; width: 34px; height: 34px; border-radius: 50%; display: grid; place-items: center; background: rgba(0,0,0,.35); backdrop-filter: blur(4px); transition: transform .2s ease; }
+.corazon:active { transform: scale(.8); }
+.corazon svg { width: 20px; height: 20px; }
+.corazon.si svg path { fill: #e23b3b; stroke: #e23b3b; }
+.corazon.si { animation: pum .35s ease; }
+@keyframes pum { 40% { transform: scale(1.3); } }
+.etiqueta { position: absolute; top: 16px; left: 18px; padding: 3px 9px; border-radius: 8px; background: #e23b3b; color: #fff; font-size: 10.5px; max-width: 60%; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.etiqueta.naranja { background: var(--acento); }
+@keyframes aparecer { from { opacity: 0; transform: translateY(10px); } }
+
+.aviso-ejemplo { margin: 14px 0 0; padding: 8px 12px; border-radius: 12px; font-size: 12px; color: var(--texto2); background: var(--acento-suave); border: 1px dashed color-mix(in srgb, var(--acento) 50%, transparent); }
+
+/* ───── barra de abajo ───── */
+.barra { position: fixed; left: 12px; right: 12px; bottom: 12px; z-index: 20; height: 72px; border-radius: 26px; background: var(--barra); backdrop-filter: blur(14px); border: 1px solid var(--borde); box-shadow: 0 -4px 30px rgba(0,0,0,.25); display: flex; justify-content: space-around; align-items: center; transition: transform .3s ease, opacity .3s ease; }
+.barra.oculta { transform: translateY(120px); opacity: 0; }
+.barra button { position: relative; flex: 1; display: flex; flex-direction: column; align-items: center; gap: 4px; font-size: 12px; color: var(--suave); font-family: var(--letra-texto); }
+.barra button svg { width: 25px; height: 25px; transition: transform .2s ease; }
+.barra button.activo { color: var(--acento); }
+.barra button.activo::before { content: ""; position: absolute; top: -12px; width: 46px; height: 3px; border-radius: 3px; background: var(--acento); box-shadow: 0 0 12px var(--acento); }
+.barra button:active svg { transform: scale(.85); }
+.contador { position: absolute; top: -6px; left: 50%; margin-left: 4px; min-width: 19px; height: 19px; padding: 0 5px; border-radius: 10px; background: var(--acento); color: #fff; font-size: 11px; font-weight: 800; display: grid; place-items: center; box-shadow: 0 0 0 2px var(--barra); }
+.contador.salta { animation: salto .5s ease; }
+@keyframes salto { 30% { transform: scale(1.6); } 60% { transform: scale(.9); } }
+
+.arriba { display: flex; align-items: center; gap: 12px; margin-bottom: 14px; }
+.arriba h1 { margin: 0; font-size: 1.6em; font-weight: 800; flex: 1; }
+.vacio { text-align: center; padding: 60px 20px; color: var(--suave); }
+.vacio .grande { font-size: 64px; margin-bottom: 10px; }
+.vacio h3 { color: var(--texto); margin: 0 0 6px; font-size: 19px; }
+.vacio .boton { margin-top: 18px; }
+
+.chips { display: flex; gap: 8px; overflow-x: auto; margin: 14px -18px; padding: 0 18px; scrollbar-width: none; }
+.chips::-webkit-scrollbar { display: none; }
+.chip-btn { flex: none; padding: 9px 16px; border-radius: 20px; background: var(--card); border: 1px solid var(--borde); font-size: 13.5px; transition: background .2s ease; }
+.chip-btn.elegido { background: var(--acento); border-color: var(--acento); color: #fff; font-weight: 800; }
+
+/* ───── detalle del producto ───── */
+#producto { padding: 0 0 150px; }
+.hero { position: relative; height: 47vh; min-height: 300px; overflow: hidden; }
+.hero img { width: 100%; height: 100%; object-fit: cover; transform: scale(1.04); animation: acercar .8s ease both; }
+@keyframes acercar { from { transform: scale(1.15); opacity: .4; } }
+.hero::after { content: ""; position: absolute; inset: 0; background: linear-gradient(180deg, rgba(0,0,0,.35) 0%, transparent 25%, transparent 70%, var(--bg) 100%); }
+.hero .botones { position: absolute; top: 14px; left: 16px; right: 16px; display: flex; gap: 10px; z-index: 2; }
+.hero .botones .redondo { background: rgba(0,0,0,.45); backdrop-filter: blur(6px); border-color: rgba(255,255,255,.1); }
+.hero .botones .espacio { flex: 1; }
+.hero .redondo.fav.si { background: rgba(226,59,59,.9); }
+.hero .redondo.fav.si svg path { fill: #fff; stroke: #fff; }
+.ficha { position: relative; margin: -46px 12px 0; padding: 18px 18px 6px; border-radius: 26px; background: var(--card); border: 1px solid var(--borde); box-shadow: var(--sombra); z-index: 3; }
+.ficha .tag { display: inline-block; padding: 4px 12px; border-radius: 10px; background: var(--acento); color: #fff; font-size: 13px; margin-bottom: 8px; }
+.ficha .linea1 { display: flex; align-items: flex-start; gap: 10px; }
+.ficha h1 { flex: 1; margin: 0; font-size: 1.47em; line-height: 1.2; font-weight: 800; }
+.ficha .precio { color: var(--acento); font-size: 26px; font-weight: 800; white-space: nowrap; }
+.ficha .datos { display: flex; align-items: center; gap: 10px; margin: 8px 0; color: var(--texto2); font-size: 13.5px; flex-wrap: wrap; }
+.ficha .datos .sep { width: 1px; height: 16px; background: var(--borde2); }
+.ficha .desc { color: var(--texto2); font-size: 14px; line-height: 1.5; margin: 0 0 12px; }
+.personaliza { margin-top: 2px; padding-top: 14px; border-top: 1px solid var(--borde); }
+.personaliza h3 { margin: 0 0 12px; font-size: 17px; font-weight: 400; font-family: var(--letra-texto); }
+.tamanos { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; padding-bottom: 12px; border-bottom: 1px solid var(--borde); }
+.tamanos .rot { margin-right: 4px; }
+.pill { padding: 8px 15px; border-radius: 22px; border: 1px solid var(--borde2); font-size: 14px; color: var(--texto2); transition: all .2s ease; }
+.pill.elegida { background: var(--acento); border-color: var(--acento); color: #fff; box-shadow: 0 5px 14px var(--acento-sombra); }
+.pill:active { transform: scale(.94); }
+.pill small { opacity: .8; }
+.agregado { display: flex; align-items: center; justify-content: space-between; gap: 10px; padding: 13px 0; border-bottom: 1px solid var(--borde); font-size: 14.5px; }
+.agregado:last-child { border-bottom: 0; }
+.agregado span { color: var(--texto); }
+.interruptor { position: relative; width: 54px; height: 30px; border-radius: 16px; background: var(--interruptor); transition: background .25s ease; flex: none; }
+.interruptor::after { content: ""; position: absolute; top: 3px; left: 3px; width: 24px; height: 24px; border-radius: 50%; background: #fff; transition: transform .25s cubic-bezier(.3,1.4,.6,1); box-shadow: 0 2px 6px rgba(0,0,0,.3); }
+.interruptor.si { background: var(--acento); }
+.interruptor.si::after { transform: translateX(24px); }
+
+.pie-fijo { position: fixed; left: 0; right: 0; bottom: 0; z-index: 25; display: flex; gap: 10px; padding: 12px 14px 16px; background: linear-gradient(180deg, transparent, var(--bg) 30%); transform: translateY(130%); transition: transform .3s ease; }
+.pie-fijo.visible { transform: none; }
+.cantidad { display: flex; align-items: center; gap: 4px; padding: 0 6px; height: 60px; border-radius: 22px; background: var(--card2); border: 1px solid var(--borde); }
+.cantidad button { width: 42px; height: 42px; border-radius: 50%; display: grid; place-items: center; background: var(--vidrio); font-size: 22px; }
+.cantidad button:active { transform: scale(.85); }
+.cantidad b { min-width: 28px; text-align: center; font-size: 19px; }
+.agregar { flex: 1; min-width: 0; height: 60px; border-radius: 22px; font-size: 15px; gap: 8px; padding: 0 12px; white-space: nowrap; }
+.agregar .div { width: 1px; height: 24px; background: rgba(255,255,255,.55); }
+@media (max-width: 430px) {
+  .agregar svg { display: none; }
+  .cantidad button { width: 36px; height: 36px; }
+  .cantidad b { min-width: 22px; }
+}
+
+/* ───── carrito ───── */
+.item { display: flex; gap: 12px; padding: 12px; border-radius: 20px; background: var(--card); border: 1px solid var(--borde); margin-bottom: 10px; animation: aparecer .3s ease both; }
+.item img { width: 78px; height: 78px; border-radius: 14px; object-fit: cover; flex: none; }
+.item .cuerpo { flex: 1; min-width: 0; }
+.item h4 { margin: 0; font-size: 15px; font-weight: 800; }
+.item .det { font-size: 12.5px; color: var(--suave); margin: 2px 0 6px; line-height: 1.35; }
+.item .abajo { display: flex; align-items: center; justify-content: space-between; }
+.item .sub { font-weight: 800; color: var(--acento); font-size: 16px; }
+.mini { display: flex; align-items: center; gap: 8px; }
+.mini button { width: 30px; height: 30px; border-radius: 10px; background: var(--card2); display: grid; place-items: center; font-size: 18px; }
+.mini b { min-width: 16px; text-align: center; }
+.borrar { color: var(--suave); align-self: flex-start; }
+.resumen { margin-top: 8px; padding: 16px; border-radius: 20px; background: var(--card); border: 1px solid var(--borde); }
+.resumen .r { display: flex; justify-content: space-between; padding: 5px 0; color: var(--texto2); }
+.resumen .r.total { margin-top: 6px; padding-top: 12px; border-top: 1px solid var(--borde); color: var(--texto); font-size: 20px; font-weight: 800; font-family: var(--letra-titulos); }
+.resumen .r.total span:last-child { color: var(--acento); }
+
+/* ───── formularios ───── */
+.campo { margin-bottom: 14px; }
+.campo label { display: block; font-size: 13.5px; color: var(--texto2); margin: 0 0 6px 4px; }
+.campo label i { color: var(--acento); font-style: normal; }
+.campo input, .campo textarea { width: 100%; padding: 14px 16px; border-radius: 16px; outline: none; background: var(--card); border: 1px solid var(--borde2); font-size: 15px; transition: border .2s ease, box-shadow .2s ease; user-select: text; }
+.campo textarea { min-height: 76px; resize: none; }
+.campo input:focus, .campo textarea:focus { border-color: var(--acento); box-shadow: 0 0 0 3px var(--acento-suave); }
+.campo.error input, .campo.error textarea { border-color: #e23b3b; }
+.campo .msg { display: none; color: #e65b5b; font-size: 12.5px; margin: 5px 0 0 4px; }
+.campo.error .msg { display: block; }
+.pagos { display: grid; gap: 8px; }
+.pago { display: flex; align-items: center; gap: 12px; padding: 13px 14px; border-radius: 16px; background: var(--card); border: 1px solid var(--borde2); text-align: left; transition: all .2s ease; }
+.pago .emo { font-size: 22px; }
+.pago .circ { margin-left: auto; width: 22px; height: 22px; border-radius: 50%; border: 2px solid var(--suave); display: grid; place-items: center; }
+.pago.elegido { border-color: var(--acento); background: var(--acento-suave); }
+.pago.elegido .circ { border-color: var(--acento); }
+.pago.elegido .circ::after { content: ""; width: 10px; height: 10px; border-radius: 50%; background: var(--acento); }
+.campo.error .pago { border-color: #e23b3b; }
+.nota-chica { font-size: 12px; color: var(--suave); margin: 4px 4px 14px; }
+.wa { background: linear-gradient(180deg, #2fd56b, #1aa851); box-shadow: 0 8px 20px rgba(34,197,94,.35); }
+
+.listo { text-align: center; padding-top: 40px; }
+.listo .ok { width: 110px; height: 110px; margin: 0 auto 18px; border-radius: 50%; display: grid; place-items: center; font-size: 54px; background: radial-gradient(circle, rgba(34,197,94,.35), rgba(34,197,94,.08)); animation: pum .6s ease; }
+.listo h1 { margin: 0 0 8px; font-size: 26px; font-weight: 800; }
+.listo p { color: var(--texto2); line-height: 1.5; margin: 0 0 8px; }
+.listo .boton { margin-top: 14px; }
+
+/* ───── hojas, menú lateral y aviso ───── */
+.velo { position: fixed; inset: 0; z-index: 40; background: rgba(0,0,0,.5); opacity: 0; visibility: hidden; transition: opacity .25s ease, visibility 0s .25s; }
+.velo.abierto { opacity: 1; visibility: visible; transition: opacity .25s ease; }
+.hoja { position: fixed; left: 0; right: 0; bottom: 0; z-index: 41; max-height: 80vh; overflow-y: auto; padding: 10px 20px 26px; border-radius: 28px 28px 0 0; background: var(--hoja); border-top: 1px solid var(--borde); transform: translateY(105%); transition: transform .3s cubic-bezier(.2,.9,.3,1); }
+.hoja.abierta { transform: none; }
+.hoja .asa { width: 44px; height: 5px; border-radius: 3px; background: var(--borde2); margin: 0 auto 14px; }
+.hoja h3 { margin: 0 0 12px; font-size: 19px; font-weight: 800; }
+.hoja p { color: var(--texto2); line-height: 1.5; }
+.opcion { display: flex; align-items: center; gap: 14px; width: 100%; padding: 14px 6px; border-bottom: 1px solid var(--borde); font-size: 15px; text-align: left; }
+.opcion:last-child { border-bottom: 0; }
+.opcion .emo { font-size: 22px; width: 30px; text-align: center; }
+.opcion .interruptor { margin-left: auto; }
+.opcion.elegida { color: var(--acento); font-weight: 800; }
+.opcion small { color: var(--suave); font-size: 13px; }
+.lateral { position: fixed; top: 0; bottom: 0; left: 0; z-index: 41; width: 78%; max-width: 320px; padding: 26px 20px; background: var(--hoja); border-right: 1px solid var(--borde); transform: translateX(-105%); transition: transform .3s cubic-bezier(.2,.9,.3,1); overflow-y: auto; }
+.lateral.abierta { transform: none; }
+.lateral .marca { display: flex; align-items: center; gap: 12px; margin-bottom: 22px; }
+.lateral .marca img { width: 54px; height: 54px; border-radius: 16px; }
+.lateral .marca b { font-size: 19px; font-weight: 800; line-height: 1.15; }
+.aviso { position: fixed; left: 50%; bottom: 100px; z-index: 60; transform: translate(-50%, 30px); opacity: 0; padding: 12px 18px; border-radius: 16px; background: var(--card2); color: var(--texto); border: 1px solid var(--borde); box-shadow: var(--sombra); font-size: 14px; max-width: 86%; text-align: center; transition: all .3s ease; pointer-events: none; }
+.aviso.ver { opacity: 1; transform: translate(-50%, 0); }
+
+#bienvenida { position: fixed; inset: 0; z-index: 100; display: grid; place-content: center; text-align: center; background: radial-gradient(circle at 50% 40%, color-mix(in srgb, var(--acento) 18%, var(--bg)), var(--bg) 70%); transition: opacity .5s ease, visibility 0s .5s; }
+#bienvenida.fuera { opacity: 0; visibility: hidden; }
+#bienvenida img { width: 140px; height: 140px; border-radius: 36px; margin: 0 auto 20px; box-shadow: 0 12px 40px var(--acento-sombra); animation: entrada .9s cubic-bezier(.2,1.3,.4,1) both; }
+#bienvenida h1 { margin: 0; font-size: 34px; font-weight: 800; animation: subir .8s .25s ease both; padding: 0 20px; }
+#bienvenida p { margin: 6px 0 0; color: var(--suave); animation: subir .8s .4s ease both; }
+@keyframes entrada { from { transform: scale(.4) rotate(-12deg); opacity: 0; } }
+@keyframes subir { from { transform: translateY(16px); opacity: 0; } }
+</style>
+</head>
+<body>
+<div class="brillo"></div>
+
+<div id="bienvenida">
+  <img src="fotos/logo.png" alt="">
+  <h1 id="bienvenidaTitulo"></h1>
+  <p id="bienvenidaSub"></p>
+</div>
+
+<!-- ═════════ INICIO ═════════ -->
+<section class="pantalla" id="inicio">
+  <div class="cabecera">
+    <button class="redondo tocable" id="btnMenu" aria-label="Menú">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M4 7h16M4 12h16M4 17h16"/></svg>
+    </button>
+    <button class="ubicacion tocable" id="btnUbicacion">
+      <svg width="20" height="20" viewBox="0 0 24 24" style="fill:var(--acento)"><path d="M12 2a7 7 0 0 0-7 7c0 5.2 7 13 7 13s7-7.8 7-13a7 7 0 0 0-7-7zm0 9.5A2.5 2.5 0 1 1 12 6.5a2.5 2.5 0 0 1 0 5z"/></svg>
+      <span id="txtUbicacion">Agregá tu dirección</span>
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><path d="m6 9 6 6 6-6"/></svg>
+    </button>
+    <button class="redondo campana tocable" id="btnAvisos" aria-label="Avisos" style="background:none;border:0">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M6 8a6 6 0 1 1 12 0c0 7 3 8 3 8H3s3-1 3-8"/><path d="M10.3 21a1.9 1.9 0 0 0 3.4 0"/></svg>
+      <i class="punto"></i>
+    </button>
+    <button class="avatar tocable" id="btnAvatar" aria-label="Perfil">C</button>
+  </div>
+
+  <p class="saludo" id="saludo"></p>
+  <h1 class="titulo" id="titulo"></h1>
+  <p class="bajada" id="bajada"></p>
+
+  <label class="buscador" id="bloqueBuscador">
+    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg>
+    <input id="buscarInicio" type="search" autocomplete="off">
+    <button class="filtro tocable" id="btnFiltroInicio" aria-label="Ordenar">
+      <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke-width="1.8" stroke-linecap="round"><path d="M4 6h10M18 6h2M4 12h4M12 12h8M4 18h12"/><circle cx="16" cy="6" r="2"/><circle cx="10" cy="12" r="2"/><circle cx="18" cy="18" r="2"/></svg>
+    </button>
+  </label>
+
+  <div class="categorias" id="catsInicio"></div>
+  <div id="especial"></div>
+  <div class="aviso-ejemplo" id="avisoEjemplo" hidden></div>
+
+  <div id="bloquePopulares">
+    <div class="seccion"><h2 id="txtPopulares"></h2><button class="tocable" data-ir="explorar" id="txtVerTodo"></button></div>
+    <div class="fila" id="populares"></div>
+  </div>
+</section>
+
+<!-- ═════════ EXPLORAR ═════════ -->
+<section class="pantalla" id="explorar">
+  <div class="arriba"><h1 id="tituloExplorar">Explorar</h1></div>
+  <label class="buscador">
+    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg>
+    <input id="buscarExplorar" type="search" autocomplete="off">
+    <button class="filtro tocable" id="btnFiltro" aria-label="Ordenar">
+      <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke-width="1.8" stroke-linecap="round"><path d="M4 6h10M18 6h2M4 12h4M12 12h8M4 18h12"/><circle cx="16" cy="6" r="2"/><circle cx="10" cy="12" r="2"/><circle cx="18" cy="18" r="2"/></svg>
+    </button>
+  </label>
+  <div class="chips" id="chips"></div>
+  <div class="grilla" id="listaExplorar"></div>
+  <div class="vacio" id="vacioExplorar" hidden><div class="grande">🔍</div><h3>No encontramos nada</h3>Probá con otra palabra o elegí otra categoría.</div>
+</section>
+
+<!-- ═════════ PRODUCTO ═════════ -->
+<section class="pantalla sin-barra" id="producto"></section>
+<div class="pie-fijo" id="pieProducto">
+  <div class="cantidad">
+    <button class="tocable" id="menos" aria-label="Menos">−</button>
+    <b id="cant">1</b>
+    <button class="tocable" id="masCant" aria-label="Más">+</button>
+  </div>
+  <button class="boton agregar" id="btnAgregar">
+    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 4h2l2.4 11.2a1 1 0 0 0 1 .8h9.2a1 1 0 0 0 1-.8L20 8H6.2"/><circle cx="9" cy="20" r="1.4"/><circle cx="17" cy="20" r="1.4"/></svg>
+    <span id="txtAgregar">Añadir al carrito</span> <span class="div"></span> <span id="totalProducto">$ 0</span>
+  </button>
+</div>
+
+<!-- ═════════ CARRITO ═════════ -->
+<section class="pantalla" id="carrito">
+  <div class="arriba"><h1>Tu carrito</h1><button class="tocable" id="vaciar" style="color:var(--suave);font-size:13.5px">Vaciar</button></div>
+  <div id="itemsCarrito"></div>
+  <div id="resumenCarrito"></div>
+</section>
+
+<!-- ═════════ DATOS DE ENTREGA ═════════ -->
+<section class="pantalla sin-barra" id="entrega">
+  <div class="arriba">
+    <button class="redondo tocable" data-atras aria-label="Volver"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="m15 18-6-6 6-6"/></svg></button>
+    <h1>Datos de entrega</h1>
+  </div>
+  <div class="campo" data-campo="nombre"><label>Nombre <i>*</i></label><input id="fNombre" autocomplete="name" placeholder="¿Cómo te llamás?"><div class="msg">Escribí tu nombre.</div></div>
+  <div class="campo" data-campo="telefono"><label>Teléfono <i>*</i></label><input id="fTelefono" type="tel" inputmode="tel" autocomplete="tel" placeholder="099 123 456"><div class="msg">Escribí un teléfono válido (por ejemplo 099 123 456).</div></div>
+  <div class="campo" data-campo="direccion"><label>Dirección <i>*</i></label><input id="fDireccion" autocomplete="street-address" placeholder="Calle y número, apto."><div class="msg">Escribí la dirección.</div></div>
+  <div class="campo" data-campo="referencia"><label>Referencia o esquina <i>*</i></label><input id="fReferencia" placeholder="Ej.: esquina Rivera, portón negro"><div class="msg">Agregá una esquina o referencia para que el repartidor llegue.</div></div>
+  <div class="campo" data-campo="pago"><label>Forma de pago <i>*</i></label>
+    <div class="pagos" id="pagos"></div>
+    <div class="msg">Elegí cómo vas a pagar.</div>
+  </div>
+  <div class="campo"><label>Nota (opcional)</label><textarea id="fNota" placeholder="Ej.: sin cebolla, tocar timbre 2…"></textarea></div>
+  <div id="resumenEntrega"></div>
+  <p class="nota-chica">Tus datos quedan guardados solo en este celular para el próximo pedido.</p>
+  <button class="boton ancho wa" id="btnEnviar">
+    <svg width="22" height="22" viewBox="0 0 24 24" fill="#fff"><path d="M12 2a10 10 0 0 0-8.6 15.1L2 22l5-1.3A10 10 0 1 0 12 2zm5.3 14.2c-.2.6-1.3 1.2-1.8 1.2-.5.1-1 .2-3.3-.7-2.8-1.1-4.6-4-4.7-4.2-.1-.2-1.1-1.5-1.1-2.9s.7-2 1-2.3c.2-.3.5-.3.7-.3h.5c.2 0 .4 0 .6.5l.9 2.1c.1.2.1.4 0 .5l-.3.5-.4.4c-.1.1-.3.3-.1.6.2.3.7 1.2 1.6 2 1.1 1 2 1.3 2.3 1.4.3.1.5.1.6-.1l.9-1.1c.2-.3.4-.2.7-.1l2 1c.3.1.5.2.5.3.1.2.1.8-.1 1.4z"/></svg>
+    <span id="txtEnviar">Enviar pedido</span>
+  </button>
+</section>
+
+<!-- ═════════ LISTO ═════════ -->
+<section class="pantalla sin-barra" id="listo">
+  <div class="listo">
+    <div class="ok">✅</div>
+    <h1 id="txtListoTitulo"></h1>
+    <p id="txtListoTexto"></p>
+    <p style="color:var(--suave);font-size:13.5px">Si no se abrió, tocá «Abrir WhatsApp de nuevo».</p>
+    <button class="boton ancho" id="btnYaEnvie">Ya lo envié 🎉</button>
+    <button class="boton ancho gris" id="btnReabrir">Abrir WhatsApp de nuevo</button>
+  </div>
+</section>
+
+<!-- ═════════ FAVORITOS ═════════ -->
+<section class="pantalla" id="favoritos">
+  <div class="arriba"><h1>Favoritos</h1></div>
+  <div class="grilla" id="listaFavs"></div>
+  <div class="vacio" id="vacioFavs" hidden><div class="grande">🤍</div><h3>Todavía no tenés favoritos</h3>Tocá el corazón de lo que más te guste y aparece acá.<br><button class="boton" data-ir="explorar">Ver el menú</button></div>
+</section>
+
+<!-- ═════════ PERFIL ═════════ -->
+<section class="pantalla" id="perfil">
+  <div class="arriba"><h1>Mi perfil</h1></div>
+  <div style="display:flex;align-items:center;gap:14px;margin-bottom:18px">
+    <div class="avatar" id="avatarGrande" style="width:66px;height:66px;font-size:26px">C</div>
+    <div><b id="perfilNombre" style="font-size:18px">¡Hola!</b><div style="color:var(--suave);font-size:13px">Tus datos para pedir más rápido</div></div>
+  </div>
+  <button class="opcion" id="modoPerfil" style="margin-bottom:10px;border:1px solid var(--borde);border-radius:16px;padding:12px 14px;background:var(--card)"><span class="emo">🌙</span>Modo oscuro<span class="interruptor"></span></button>
+  <div class="campo"><label>Nombre</label><input id="pNombre" autocomplete="name"></div>
+  <div class="campo"><label>Teléfono</label><input id="pTelefono" type="tel" inputmode="tel"></div>
+  <div class="campo"><label>Dirección</label><input id="pDireccion"></div>
+  <div class="campo"><label>Referencia o esquina</label><input id="pReferencia"></div>
+  <button class="boton ancho" id="btnGuardarPerfil">Guardar mis datos</button>
+  <p class="nota-chica" style="text-align:center;margin-top:16px"><span id="nombreApp">Delicias de Ceci</span> · versión <span id="version">web</span></p>
+</section>
+
+<!-- ═════════ BARRA DE ABAJO ═════════ -->
+<nav class="barra" id="barra">
+  <button data-tab="inicio" class="activo"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 3 3 10.2V20a1 1 0 0 0 1 1h5v-6h6v6h5a1 1 0 0 0 1-1v-9.8z"/></svg>Inicio</button>
+  <button data-tab="explorar"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="12" r="9"/><path d="m15.5 8.5-2 5-5 2 2-5z"/></svg>Explorar</button>
+  <button data-tab="carrito"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 4h2l2.4 11.2a1 1 0 0 0 1 .8h9.2a1 1 0 0 0 1-.8L20 8H6.2"/><circle cx="9" cy="20" r="1.4"/><circle cx="17" cy="20" r="1.4"/></svg><span class="contador" id="contador" hidden>0</span>Carrito</button>
+  <button data-tab="favoritos"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M12 20.5s-8-4.8-8-11A4.5 4.5 0 0 1 12 6.6a4.5 4.5 0 0 1 8 2.9c0 6.2-8 11-8 11z"/></svg>Favoritos</button>
+  <button data-tab="perfil"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="8" r="4"/><path d="M4 21a8 8 0 0 1 16 0"/></svg>Perfil</button>
+</nav>
+
+<div class="velo" id="velo"></div>
+<div class="hoja" id="hoja"><div class="asa"></div><div id="hojaCuerpo"></div></div>
+<aside class="lateral" id="lateral"></aside>
+<div class="aviso" id="aviso"></div>
+
+<script>
+"use strict";
+// ═════════════════════════════════════════════════════════════
+//  Delicias de Ceci — la app entera. TODO lo que se ve sale de menu.json
+//  (lo arma el Panel). En el celular baja el menú publicado del buzón.
+// ═════════════════════════════════════════════════════════════
+const BUZON = "https://luchoplay.github.io/delicias-de-ceci/";
+const $ = (s, r = document) => r.querySelector(s);
+const $$ = (s, r = document) => [...r.querySelectorAll(s)];
+const NATIVO = typeof window.CeciApp !== "undefined";
+const PARAMS = new URLSearchParams(location.search);
+const VISTA = PARAMS.has("vista");          // dentro del panel: los datos llegan por mensaje
+
+// letras disponibles: nombre → archivos (fonts/) y grosores
+const FUENTES = {
+  "Poppins": [["poppins-400", "400"], ["poppins-800", "800"]],
+  "Montserrat": [["montserrat", "100 900"]], "Rubik": [["rubik", "300 900"]],
+  "Figtree": [["figtree", "300 900"]], "DM Sans": [["dm-sans", "100 1000"]],
+  "Inter": [["inter", "100 900"]], "Roboto": [["roboto", "100 900"]],
+  "Arimo": [["arimo", "400 700"]], "Oswald": [["oswald", "200 700"]],
+  "Bodoni Moda": [["bodoni-moda", "400 900"]], "Anton": [["anton", "100 900"]],
+  "Bebas Neue": [["bebas-neue", "100 900"]], "Orbitron": [["orbitron", "400 900"]],
+};
+window.FUENTES = FUENTES;
+
+const E = {
+  menu: null, base: "",
+  carrito: [], favs: new Set(),
+  perfil: { nombre: "", telefono: "", direccion: "", referencia: "", pago: "", nota: "" },
+  historial: ["inicio"], cat: "todo", orden: "relevancia", prod: null, ultimoMensaje: "",
+  modo: null,      // elección del cliente: "oscuro" / "claro" / null = lo que diga el negocio
+};
+
+function leer(k, def) { try { const v = localStorage.getItem("ceci." + k); return v ? JSON.parse(v) : def; } catch (e) { return def; } }
+function guardar(k, v) { if (VISTA) return; try { localStorage.setItem("ceci." + k, JSON.stringify(v)); } catch (e) {} }
+
+function plata(n) {
+  const s = String(Math.round(n)).replace(/\B(?=(\d{3})+(?!\d))/g, ".");
+  return ((E.menu && E.menu.negocio.moneda) || "$") + " " + s;
+}
+const esc = s => String(s == null ? "" : s).replace(/[&<>"']/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
+// *palabra* = en color; saltos de línea = <br>
+const marcado = s => esc(s).replace(/\*([^*]+)\*/g, "<em>$1</em>").replace(/\n/g, "<br>");
+const T = k => (E.menu.textos || {})[k] || "";
+const SEC = k => !E.menu.secciones || E.menu.secciones[k] !== false;
+// foto: del buzón si el menú vino de ahí; si no carga, la copia que trae la app
+function foto(f) { return esc((E.base || "") + f); }
+function fotoAttr(f) { return `src="${foto(f)}" data-local="${esc(f)}" onerror="fotoRota(this)"`; }
+window.fotoRota = img => { const l = img.dataset.local; if (l && img.getAttribute("src") !== l) img.src = l; else { img.onerror = null; img.classList.add("foto-falta"); img.removeAttribute("src"); } };
+
+const productos = () => E.menu.productos.filter(p => p.visible !== false);
+function producto(id) { return E.menu.productos.find(p => p.id === id); }
+function categoria(id) { return E.menu.categorias.find(c => c.id === id); }
+
+function precioUnidad(p, tamano, agregados) {
+  let t = Number(p.precio) || 0;
+  const tm = (p.tamanos || []).find(x => x.nombre === tamano);
+  if (tm) t += Number(tm.extra) || 0;
+  for (const a of agregados) { const ag = (p.agregados || []).find(x => x.nombre === a); if (ag) t += Number(ag.precio) || 0; }
+  return t;
+}
+function subtotal(it) { const p = producto(it.id); return p ? precioUnidad(p, it.tamano, it.agregados) * it.cantidad : 0; }
+function totalCarrito() { return E.carrito.reduce((s, it) => s + subtotal(it), 0); }
+function costoEnvio() { return Number(E.menu.negocio.costoEnvio) || 0; }
+function unidades() { return E.carrito.reduce((s, it) => s + it.cantidad, 0); }
+
+let tAviso;
+function aviso(txt) { const a = $("#aviso"); a.textContent = txt; a.classList.add("ver"); clearTimeout(tAviso); tAviso = setTimeout(() => a.classList.remove("ver"), 2200); }
+
+// ═════════ DISEÑO: colores, letras, tamaño, modo ═════════
+function mezclar(hex, pct) {     // aclara un color hacia blanco
+  const n = parseInt(hex.slice(1), 16), r = n >> 16, g = (n >> 8) & 255, b = n & 255;
+  const f = c => Math.round(c + (255 - c) * pct).toString(16).padStart(2, "0");
+  return "#" + f(r) + f(g) + f(b);
+}
+function rgba(hex, a) { const n = parseInt(hex.slice(1), 16); return `rgba(${n >> 16},${(n >> 8) & 255},${n & 255},${a})`; }
+function modoActual() {
+  const d = (E.menu.diseno || {}).modo || "oscuro";
+  const m = E.modo || d;
+  if (m === "auto") return matchMedia("(prefers-color-scheme: light)").matches ? "claro" : "oscuro";
+  return m;
+}
+function aplicarDiseno() {
+  const d = E.menu.diseno || {}, r = document.documentElement.style;
+  const ac = /^#[0-9a-f]{6}$/i.test(d.acento || "") ? d.acento : "#ff7a18";
+  r.setProperty("--acento", ac);
+  r.setProperty("--acento2", mezclar(ac, .28));
+  r.setProperty("--acento-sombra", rgba(ac, .4));
+  r.setProperty("--acento-suave", rgba(ac, .12));
+  r.setProperty("--escala", (Number(d.tamano) || 100) / 100);
+  const css = [], usar = new Set([d.letraTitulos || "Poppins", d.letraTexto || "Poppins"]);
+  for (const nombre of usar) for (const [arch, peso] of FUENTES[nombre] || [])
+    css.push(`@font-face{font-family:"${nombre}";font-weight:${peso};font-display:swap;src:url("fonts/${arch}.woff2") format("woff2")}`);
+  $("#estiloLetras").textContent = css.join("\n");
+  r.setProperty("--letra-titulos", `"${d.letraTitulos || "Poppins"}", system-ui, sans-serif`);
+  r.setProperty("--letra-texto", `"${d.letraTexto || "Poppins"}", system-ui, sans-serif`);
+  const modo = modoActual();
+  document.documentElement.dataset.modo = modo;
+  const fondo = modo === "claro" ? "#f7f3ee" : "#0c0c0e";
+  $('meta[name="theme-color"]').content = fondo;
+  if (NATIVO && window.CeciApp.barra) try { window.CeciApp.barra(fondo, modo === "claro"); } catch (e) {}
+  $$(".interruptor-modo, #modoPerfil .interruptor").forEach(s => s.classList.toggle("si", modo === "oscuro"));
+}
+function alternarModo() {
+  E.modo = modoActual() === "oscuro" ? "claro" : "oscuro";
+  guardar("modo", E.modo); aplicarDiseno();
+  aviso(E.modo === "oscuro" ? "Modo oscuro 🌙" : "Modo claro ☀️");
+}
+
+// ═════════ NAVEGACIÓN ═════════
+const CON_BARRA = ["inicio", "explorar", "carrito", "favoritos", "perfil"];
+function mostrar(v) {
+  $$(".pantalla").forEach(p => p.classList.toggle("activa", p.id === v));
+  $("#barra").classList.toggle("oculta", !CON_BARRA.includes(v));
+  $$(".barra button").forEach(b => b.classList.toggle("activo", b.dataset.tab === v));
+  $("#pieProducto").classList.toggle("visible", v === "producto");
+  const pant = document.getElementById(v); if (pant) pant.scrollTop = 0;
+  if (v === "carrito") pintarCarrito();
+  if (v === "favoritos") pintarFavs();
+  if (v === "perfil") pintarPerfil();
+  if (v === "entrega") pintarEntrega();
+  if (v === "explorar") pintarExplorar();
+  if (v === "inicio") pintarPopulares();
+  if (v === "listo") { $("#txtListoTitulo").textContent = T("listoTitulo"); $("#txtListoTexto").innerHTML = marcado(T("listoTexto")); }
+}
+function ir(v) { if (E.historial[E.historial.length - 1] !== v) E.historial.push(v); mostrar(v); }
+function tab(v) { E.historial = v === "inicio" ? ["inicio"] : ["inicio", v]; mostrar(v); }
+window.atras = function () {
+  if ($("#velo").classList.contains("abierto")) { cerrarHojas(); return true; }
+  if (E.historial.length > 1) { E.historial.pop(); mostrar(E.historial[E.historial.length - 1]); return true; }
+  return false;
+};
+
+// ═════════ INICIO ═════════
+const SVG_CORAZON = `<svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2"><path d="M12 20.5s-8-4.8-8-11A4.5 4.5 0 0 1 12 6.6a4.5 4.5 0 0 1 8 2.9c0 6.2-8 11-8 11z"/></svg>`;
+function tarjetaHTML(p) {
+  const fav = E.favs.has(p.id);
+  const meta = p.estrellas
+    ? `<span style="color:#ffb020">★</span> ${esc(p.estrellas)}${p.resenas ? ` <span>(${esc(p.resenas)})</span>` : ""}`
+    : `<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg> ${esc(p.tiempo || "")}`;
+  return `<article class="tarjeta${p.agotado ? " agotada" : ""}" data-prod="${esc(p.id)}">
+    <img class="img" ${fotoAttr(p.foto)} alt="" loading="lazy">
+    ${p.agotado ? `<span class="sello-agotado">AGOTADO HOY</span>` : ""}
+    ${p.etiqueta ? `<span class="etiqueta${p.etiqueta === "Más vendido" ? "" : " naranja"}">${esc(p.etiqueta)}</span>` : ""}
+    <button class="corazon ${fav ? "si" : ""}" data-fav="${esc(p.id)}" aria-label="Favorito">${SVG_CORAZON}</button>
+    <h4>${esc(p.nombre)}</h4>
+    <div class="meta">${meta}</div>
+    <div class="pie"><span class="precio">${plata(p.precio)}${p.precioAntes ? `<span class="antes">${plata(p.precioAntes)}</span>` : ""}</span>
+      <button class="mas" data-rapido="${esc(p.id)}" aria-label="Agregar"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="3" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg></button></div>
+  </article>`;
+}
+function pintarTextos() {
+  $("#titulo").innerHTML = marcado(T("titulo"));
+  $("#bajada").innerHTML = marcado(T("bajada"));
+  $("#buscarInicio").placeholder = $("#buscarExplorar").placeholder = T("buscador");
+  $("#txtPopulares").textContent = T("populares");
+  $("#txtVerTodo").textContent = T("verTodo");
+  $("#bienvenidaTitulo").innerHTML = marcado(T("bienvenidaTitulo"));
+  $("#bienvenidaSub").textContent = T("bienvenidaSub");
+  $("#txtEnviar").textContent = T("botonEnviar") || "Enviar pedido";
+  $("#avisoEjemplo").textContent = T("avisoEjemplo");
+  $("#nombreApp").textContent = (E.menu.app && E.menu.app.nombre) || E.menu.negocio.nombre;
+  document.title = E.menu.negocio.nombre;
+}
+function pintarInicio() {
+  const m = E.menu;
+  pintarTextos();
+  $("#bloqueBuscador").hidden = !SEC("buscador");
+  $("#catsInicio").hidden = !SEC("categorias");
+  $("#bloquePopulares").hidden = !SEC("populares");
+  $("#catsInicio").innerHTML = m.categorias.map((c, i) =>
+    `<button class="cat${i === 0 ? " elegida" : ""}" data-cat="${esc(c.id)}"><span class="emo">${esc(c.icono)}</span>${esc(c.nombre)}</button>`).join("");
+  const es = SEC("especial") && m.especial && producto(m.especial.producto);
+  $("#especial").innerHTML = es ? `
+    <div class="especial tocable" data-prod="${esc(es.id)}">
+      <img class="foto" ${fotoAttr(es.foto)} alt="">
+      ${m.especial.etiqueta ? `<div class="sello"><b>${esc(m.especial.etiqueta)}</b><small>${esc(m.especial.etiquetaChica || "")}</small></div>` : ""}
+      <div class="info">
+        <div class="chip"><span style="color:var(--acento)">⚡</span> ${esc(T("especialChip"))}</div>
+        <h3>${esc(m.especial.titulo)}</h3>
+        <p>${esc(m.especial.detalle)}</p>
+        <button class="boton" data-prod="${esc(es.id)}">${esc(T("botonEspecial"))} <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.4" stroke-linecap="round"><path d="M5 12h14m-6-6 6 6-6 6"/></svg></button>
+      </div>
+    </div><div class="puntos"><i></i><i></i><i></i></div>` : "";
+  $("#avisoEjemplo").hidden = !m.ejemplo;
+  pintarPopulares();
+  pintarCabecera();
+}
+function pintarPopulares() { $("#populares").innerHTML = productos().filter(p => p.popular).map(tarjetaHTML).join(""); }
+function pintarCabecera() {
+  const n = E.perfil.nombre.trim().split(/\s+/)[0];
+  $("#saludo").textContent = (T("saludo") || "Hola") + (n ? `, ${n}` : "") + " 👋";
+  $("#btnAvatar").textContent = n ? n[0].toUpperCase() : "🙂";
+  $("#txtUbicacion").textContent = E.perfil.direccion.trim() || "Agregá tu dirección";
+}
+
+// ═════════ EXPLORAR ═════════
+const normal = s => String(s || "").toLowerCase().normalize("NFD").replace(/[̀-ͯ]/g, "").trim();
+function pintarExplorar() {
+  const m = E.menu;
+  if (E.cat !== "todo" && !categoria(E.cat)) E.cat = "todo";
+  $("#chips").innerHTML = [{ id: "todo", nombre: "Todo", icono: "✨" }, ...m.categorias].map(c =>
+    `<button class="chip-btn${E.cat === c.id ? " elegido" : ""}" data-chip="${esc(c.id)}">${esc(c.icono)} ${esc(c.nombre)}</button>`).join("");
+  const q = normal($("#buscarExplorar").value);
+  let lista = productos().filter(p =>
+    (E.cat === "todo" || p.categoria === E.cat) &&
+    (!q || normal(p.nombre + " " + p.descripcion + " " + (categoria(p.categoria) || {}).nombre).includes(q)));
+  if (E.orden === "menor") lista = [...lista].sort((a, b) => a.precio - b.precio);
+  if (E.orden === "mayor") lista = [...lista].sort((a, b) => b.precio - a.precio);
+  if (E.orden === "nombre") lista = [...lista].sort((a, b) => a.nombre.localeCompare(b.nombre, "es"));
+  $("#listaExplorar").innerHTML = lista.map(tarjetaHTML).join("");
+  $("#vacioExplorar").hidden = lista.length > 0;
+  const c = categoria(E.cat);
+  $("#tituloExplorar").textContent = c ? c.nombre : "Explorar";
+}
+function abrirOrden() {
+  const ops = [["relevancia", "⭐", "Recomendados"], ["menor", "⬇️", "Precio: menor a mayor"], ["mayor", "⬆️", "Precio: mayor a menor"], ["nombre", "🔤", "Nombre (A-Z)"]];
+  abrirHoja(`<h3>Ordenar</h3>` + ops.map(([id, e, t]) => `<button class="opcion${E.orden === id ? " elegida" : ""}" data-orden="${id}"><span class="emo">${e}</span>${t}</button>`).join(""));
+}
+
+// ═════════ PRODUCTO ═════════
+function abrirProducto(id, sinHistorial) {
+  const p = producto(id); if (!p) return;
+  E.prod = { id, tamano: p.tamanos && p.tamanos.length ? p.tamanos[0].nombre : "", agregados: [], cantidad: 1 };
+  const cat = categoria(p.categoria), fav = E.favs.has(id);
+  $("#producto").innerHTML = `
+    <div class="hero">
+      <img ${fotoAttr(p.foto)} alt="">
+      <div class="botones">
+        <button class="redondo tocable" data-atras aria-label="Volver"><svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.2" stroke-linecap="round"><path d="m15 18-6-6 6-6"/></svg></button>
+        <span class="espacio"></span>
+        <button class="redondo tocable" id="btnCompartir" aria-label="Compartir"><svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="1.8"><circle cx="18" cy="5" r="2.6"/><circle cx="6" cy="12" r="2.6"/><circle cx="18" cy="19" r="2.6"/><path d="m8.3 10.8 7.4-4.4M8.3 13.2l7.4 4.4"/></svg></button>
+        <button class="redondo tocable fav ${fav ? "si" : ""}" data-fav="${esc(id)}" aria-label="Favorito">${SVG_CORAZON}</button>
+      </div>
+    </div>
+    <div class="ficha">
+      ${p.agotado ? `<span class="tag" style="background:#555">Agotado hoy</span> ` : ""}${p.etiqueta ? `<span class="tag">${esc(p.etiqueta)}</span>` : ""}
+      <div class="linea1"><h1>${esc(p.nombre)}</h1><span class="precio">${plata(p.precio)}</span></div>
+      <div class="datos">
+        ${p.estrellas ? `<span><span style="color:#ffb020">★</span> ${esc(p.estrellas)}${p.resenas ? ` (${esc(p.resenas)} reseñas)` : ""}</span><span class="sep"></span>` : ""}
+        <span>${cat ? esc(cat.icono) + " " + esc(cat.nombre) : ""}</span>${p.tiempo ? `<span class="sep"></span>
+        <span style="display:flex;align-items:center;gap:5px"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg>${esc(p.tiempo)}</span>` : ""}
+      </div>
+      ${p.precioAntes ? `<div style="margin:-2px 0 8px;font-size:13px;color:var(--suave)">Antes <s>${plata(p.precioAntes)}</s> · ahorrás ${plata(p.precioAntes - p.precio)}</div>` : ""}
+      <p class="desc">${esc(p.descripcion)}</p>
+      ${(p.tamanos && p.tamanos.length) || (p.agregados && p.agregados.length) ? `
+      <div class="personaliza">
+        <h3>Personalizá tu ${esc(cat ? cat.singular || cat.nombre.toLowerCase() : "pedido")}</h3>
+        ${p.tamanos && p.tamanos.length ? `<div class="tamanos"><span class="rot">Tamaño</span>${p.tamanos.map((t, i) =>
+          `<button class="pill${i === 0 ? " elegida" : ""}" data-tam="${esc(t.nombre)}">${esc(t.nombre)}${Number(t.extra) ? ` <small>+${plata(t.extra)}</small>` : ""}</button>`).join("")}</div>` : ""}
+        ${(p.agregados || []).map(a => `<div class="agregado" data-ag="${esc(a.nombre)}"><span>Agregar ${esc(a.nombre.toLowerCase())} ${Number(a.precio) ? `(+${plata(a.precio)})` : "(sin costo)"}</span><button class="interruptor" role="switch" aria-checked="false" aria-label="${esc(a.nombre)}"></button></div>`).join("")}
+      </div>` : ""}
+    </div>`;
+  actualizarFicha();
+  if (sinHistorial) { E.historial = ["inicio", "producto"]; mostrar("producto"); } else ir("producto");
+}
+function actualizarFicha() {
+  const p = producto(E.prod.id);
+  $("#cant").textContent = E.prod.cantidad;
+  $("#totalProducto").textContent = plata(precioUnidad(p, E.prod.tamano, E.prod.agregados) * E.prod.cantidad);
+  $("#txtAgregar").textContent = p.agotado ? "Agotado hoy" : "Añadir al carrito";
+  $("#btnAgregar").disabled = !!p.agotado;
+  $$("#producto .pill").forEach(b => b.classList.toggle("elegida", b.dataset.tam === E.prod.tamano));
+  $$("#producto .agregado").forEach(f => {
+    const si = E.prod.agregados.includes(f.dataset.ag), sw = $(".interruptor", f);
+    sw.classList.toggle("si", si); sw.setAttribute("aria-checked", si);
+  });
+}
+
+// ═════════ CARRITO ═════════
+function agregarAlCarrito(id, tamano, agregados, cantidad) {
+  const p = producto(id);
+  if (!p || p.agotado) { aviso("Ese producto está agotado hoy"); return false; }
+  const orden = (p.agregados || []).map(a => a.nombre).filter(n => agregados.includes(n));
+  const clave = [id, tamano, ...orden].join("|");
+  const ya = E.carrito.find(it => it.clave === clave);
+  if (ya) ya.cantidad += cantidad; else E.carrito.push({ clave, id, tamano, agregados: orden, cantidad });
+  guardar("carrito", E.carrito); actualizarContador(true);
+  return true;
+}
+function limpiarCarrito() {   // saca lo que ya no existe o se agotó (cambios del menú)
+  const antes = E.carrito.length;
+  E.carrito = E.carrito.filter(it => { const p = producto(it.id); return p && p.visible !== false && !p.agotado; });
+  if (E.carrito.length !== antes) { guardar("carrito", E.carrito); return true; }
+  return false;
+}
+function actualizarContador(saltar) {
+  const n = unidades(), c = $("#contador");
+  c.hidden = n === 0; c.textContent = n;
+  if (saltar) { c.classList.remove("salta"); void c.offsetWidth; c.classList.add("salta"); }
+}
+function detalleItem(it) {
+  const partes = [];
+  if (it.tamano) partes.push(it.tamano);
+  if (it.agregados.length) partes.push("+ " + it.agregados.join(", "));
+  return partes.join(" · ");
+}
+function pintarCarrito() {
+  if (!E.carrito.length) {
+    $("#itemsCarrito").innerHTML = `<div class="vacio"><div class="grande">🛒</div><h3>Tu carrito está vacío</h3>Elegí algo rico del menú y aparece acá.<br><button class="boton" data-ir="explorar">Ver el menú</button></div>`;
+    $("#resumenCarrito").innerHTML = ""; $("#vaciar").hidden = true; return;
+  }
+  $("#vaciar").hidden = false;
+  $("#itemsCarrito").innerHTML = E.carrito.map((it, i) => {
+    const p = producto(it.id);
+    return `<div class="item"><img ${fotoAttr(p.foto)} alt="">
+      <div class="cuerpo"><h4>${esc(p.nombre)}</h4><div class="det">${esc(detalleItem(it)) || "&nbsp;"}<br>${plata(precioUnidad(p, it.tamano, it.agregados))} c/u</div>
+        <div class="abajo"><div class="mini"><button class="tocable" data-menos="${i}">−</button><b>${it.cantidad}</b><button class="tocable" data-mas="${i}">+</button></div>
+        <span class="sub">${plata(subtotal(it))}</span></div></div>
+      <button class="borrar tocable" data-borrar="${i}" aria-label="Quitar"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M4 7h16M10 11v6M14 11v6M6 7l1 13h10l1-13M9 7V4h6v3"/></svg></button></div>`;
+  }).join("");
+  $("#resumenCarrito").innerHTML = resumenHTML() + `<div style="height:14px"></div><button class="boton ancho" data-ir="entrega">Continuar con la entrega →</button>`;
+}
+function textoEnvio() { const env = costoEnvio(); return env ? plata(env) : (E.menu.negocio.textoEnvio || "Gratis"); }
+function resumenHTML() {
+  const sub = totalCarrito(), env = costoEnvio();
+  return `<div class="resumen">
+    <div class="r"><span>Productos (${unidades()})</span><span>${plata(sub)}</span></div>
+    <div class="r"><span>Envío</span><span>${esc(textoEnvio())}</span></div>
+    <div class="r total"><span>Total</span><span id="totalFinal">${plata(sub + env)}</span></div></div>`;
+}
+
+// ═════════ ENTREGA ═════════
+function pagos() { return (E.menu.pagos && E.menu.pagos.length) ? E.menu.pagos : [{ id: "efectivo", nombre: "Efectivo", emo: "💵" }]; }
+function pintarEntrega() {
+  const f = E.perfil;
+  if (f.pago && !pagos().some(p => p.id === f.pago)) f.pago = "";
+  $("#fNombre").value = f.nombre; $("#fTelefono").value = f.telefono; $("#fDireccion").value = f.direccion;
+  $("#fReferencia").value = f.referencia; $("#fNota").value = f.nota || "";
+  $("#pagos").innerHTML = pagos().map(p => `<button class="pago${f.pago === p.id ? " elegido" : ""}" data-pago="${esc(p.id)}"><span class="emo">${esc(p.emo)}</span>${esc(p.nombre)}<span class="circ"></span></button>`).join("");
+  $("#resumenEntrega").innerHTML = resumenHTML();
+  $$("#entrega .campo").forEach(c => c.classList.remove("error"));
+}
+function telefonoValido(t) { let d = String(t).replace(/\D/g, ""); if (d.startsWith("598")) d = d.slice(3); return d.length >= 8 && d.length <= 9; }
+function leerFormulario() {
+  E.perfil.nombre = $("#fNombre").value.trim(); E.perfil.telefono = $("#fTelefono").value.trim();
+  E.perfil.direccion = $("#fDireccion").value.trim(); E.perfil.referencia = $("#fReferencia").value.trim();
+  E.perfil.nota = $("#fNota").value.trim();
+}
+function validar() {
+  const f = E.perfil, malos = [];
+  if (!f.nombre) malos.push("nombre");
+  if (!telefonoValido(f.telefono)) malos.push("telefono");
+  if (!f.direccion) malos.push("direccion");
+  if (!f.referencia) malos.push("referencia");
+  if (!f.pago) malos.push("pago");
+  $$("#entrega .campo[data-campo]").forEach(c => c.classList.toggle("error", malos.includes(c.dataset.campo)));
+  return malos;
+}
+
+// ═════════ MENSAJE DE WHATSAPP (plantilla del panel) ═════════
+const PLANTILLA = "🍔 *NUEVO PEDIDO · {negocio}*\nPedido N.º {numero}\n\n👤 *Nombre:* {nombre}\n📞 *Teléfono:* {telefono}\n📍 *Dirección:* {direccion}\n🧭 *Referencia:* {referencia}\n\n🛒 *Pedido:*\n{productos}\n\n💰 *TOTAL: {total}*\n🛵 Envío: {envio}\n💳 *Pago:* {pago}\n📝 *Nota:* {nota}";
+function lineasProductos() {
+  const l = [];
+  E.carrito.forEach((it, i) => {
+    const p = producto(it.id);
+    l.push(`${i + 1}) ${it.cantidad} × ${p.nombre}${it.tamano ? ` (${it.tamano})` : ""}`);
+    if (it.agregados.length) l.push(`    + ${it.agregados.join(", ")}`);
+    l.push(`    ${plata(precioUnidad(p, it.tamano, it.agregados))} c/u → *${plata(subtotal(it))}*`);
+  });
+  return l.join("\n");
+}
+function armarMensaje(ahora = new Date()) {
+  const f = E.perfil, dos = n => String(n).padStart(2, "0");
+  const v = {
+    negocio: E.menu.negocio.nombre,
+    numero: `${dos(ahora.getDate())}${dos(ahora.getMonth() + 1)}-${dos(ahora.getHours())}${dos(ahora.getMinutes())}`,
+    fecha: `${dos(ahora.getDate())}/${dos(ahora.getMonth() + 1)}/${ahora.getFullYear()} ${dos(ahora.getHours())}:${dos(ahora.getMinutes())}`,
+    nombre: f.nombre, telefono: f.telefono, direccion: f.direccion, referencia: f.referencia,
+    productos: lineasProductos(), subtotal: plata(totalCarrito()), envio: textoEnvio(),
+    total: plata(totalCarrito() + costoEnvio()),
+    pago: (pagos().find(p => p.id === f.pago) || {}).nombre || "", nota: f.nota,
+  };
+  const plantilla = E.menu.mensaje || PLANTILLA;
+  // un renglón con un dato vacío (por ejemplo, sin nota) se saca entero
+  return plantilla.split("\n").filter(r => !/\{(\w+)\}/.test(r) || [...r.matchAll(/\{(\w+)\}/g)].every(m => !(m[1] in v) || String(v[m[1]]).trim()))
+    .map(r => r.replace(/\{(\w+)\}/g, (t, k) => k in v ? v[k] : t)).join("\n").replace(/\n{3,}/g, "\n\n").trim();
+}
+function abrirWhatsApp(texto) {
+  const numero = String(E.menu.negocio.whatsapp).replace(/\D/g, "");
+  if (NATIVO) {
+    if (window.CeciApp.abrirWhatsApp(numero, texto) !== "ok") {
+      abrirHoja(`<h3>No encontramos WhatsApp</h3><p>Para enviar el pedido necesitás tener WhatsApp instalado en este celular.<br><br>También podés escribirle al <b>+${numero}</b>.</p><button class="boton ancho" data-cerrar>Entendido</button>`);
+      return false;
+    }
+    return true;
+  }
+  // api.whatsapp.com y no wa.me: wa.me rompe los emojis (probado en el S25 con Chrome, 16/11/2026)
+  window.__ultimoWhatsApp = { numero, texto, url: `https://api.whatsapp.com/send?phone=${numero}&text=${encodeURIComponent(texto)}` };
+  if (VISTA) { aviso("Vista previa: acá se abriría WhatsApp"); return true; }
+  if (!window.__sinAbrir) {
+    if (/Android|iPhone|iPad/i.test(navigator.userAgent)) location.href = window.__ultimoWhatsApp.url;
+    else window.open(window.__ultimoWhatsApp.url, "_blank");
+  }
+  return true;
+}
+function enviarPedido() {
+  leerFormulario();
+  const malos = validar();
+  guardar("perfil", E.perfil);
+  if (malos.length) {
+    aviso("Revisá los datos marcados en rojo");
+    const c = $(`#entrega .campo[data-campo="${malos[0]}"]`); if (c) c.scrollIntoView({ behavior: "smooth", block: "center" });
+    return;
+  }
+  if (limpiarCarrito()) { actualizarContador(); aviso("Algo de tu carrito se agotó: revisalo"); tab("carrito"); return; }
+  if (!E.carrito.length) { aviso("Tu carrito está vacío"); return; }
+  E.ultimoMensaje = armarMensaje();
+  pintarCabecera();
+  $("#aviso").classList.remove("ver");
+  if (abrirWhatsApp(E.ultimoMensaje)) ir("listo");
+}
+
+// ═════════ FAVORITOS Y PERFIL ═════════
+function alternarFav(id) {
+  if (E.favs.has(id)) { E.favs.delete(id); aviso("Quitado de favoritos"); } else { E.favs.add(id); aviso("Agregado a favoritos ❤️"); }
+  guardar("favs", [...E.favs]);
+  $$(`[data-fav="${id}"]`).forEach(b => b.classList.toggle("si", E.favs.has(id)));
+  if ($("#favoritos").classList.contains("activa")) pintarFavs();
+}
+function pintarFavs() {
+  const lista = productos().filter(p => E.favs.has(p.id));
+  $("#listaFavs").innerHTML = lista.map(tarjetaHTML).join("");
+  $("#vacioFavs").hidden = lista.length > 0;
+}
+function pintarPerfil() {
+  const f = E.perfil;
+  $("#pNombre").value = f.nombre; $("#pTelefono").value = f.telefono; $("#pDireccion").value = f.direccion; $("#pReferencia").value = f.referencia;
+  $("#perfilNombre").textContent = f.nombre ? "¡Hola, " + f.nombre.split(/\s+/)[0] + "!" : "¡Hola!";
+  $("#avatarGrande").textContent = f.nombre ? f.nombre[0].toUpperCase() : "🙂";
+  aplicarDiseno();
+}
+
+// ═════════ HOJAS ═════════
+function abrirHoja(html) { $("#hojaCuerpo").innerHTML = html; $("#hoja").classList.add("abierta"); $("#velo").classList.add("abierto"); }
+function cerrarHojas() { $("#hoja").classList.remove("abierta"); $("#lateral").classList.remove("abierta"); $("#velo").classList.remove("abierto"); }
+function abrirLateral() {
+  const nombre = (E.menu.app && E.menu.app.nombre) || E.menu.negocio.nombre;
+  $("#lateral").innerHTML = `<div class="marca"><img src="fotos/logo.png" alt=""><b>${esc(nombre)}</b></div>
+    ${[["inicio", "🏠", "Inicio"], ["explorar", "🍽️", "Ver el menú"], ["carrito", "🛒", "Mi carrito"], ["favoritos", "❤️", "Favoritos"], ["perfil", "👤", "Mis datos"]].map(([v, e, t]) =>
+      `<button class="opcion" data-lat="${v}"><span class="emo">${e}</span>${t}</button>`).join("")}
+    <button class="opcion" id="btnModoLateral"><span class="emo">🌙</span>Modo oscuro<span class="interruptor interruptor-modo"></span></button>
+    <button class="opcion" id="btnHablar"><span class="emo">💬</span>Escribinos por WhatsApp</button>`;
+  aplicarDiseno();
+  $("#lateral").classList.add("abierta"); $("#velo").classList.add("abierto");
+}
+
+// ═════════ TOQUES ═════════
+document.addEventListener("click", ev => {
+  if (ev.target.closest("#btnModoLateral, #modoPerfil")) { alternarModo(); return; }
+  let t = ev.target.closest("button, [data-prod], .agregado, .cat");
+  if (!t) return;
+  if (t.classList.contains("interruptor")) t = t.closest(".agregado") || t;
+  const d = t.dataset;
+  if (d.fav) { ev.stopPropagation(); alternarFav(d.fav); return; }
+  if (d.rapido) {
+    ev.stopPropagation();
+    const p = producto(d.rapido);
+    if (agregarAlCarrito(p.id, p.tamanos && p.tamanos.length ? p.tamanos[0].nombre : "", [], 1)) aviso(`${p.nombre} al carrito 🛒`);
+    return;
+  }
+  if (d.tab) { tab(d.tab); return; }
+  if (d.lat) { cerrarHojas(); tab(d.lat); return; }
+  if (d.ir) { cerrarHojas(); if (d.ir === "explorar") { E.cat = "todo"; return tab("explorar"); } ir(d.ir); return; }
+  if (d.atras !== undefined) { window.atras(); return; }
+  if (d.cerrar !== undefined) { cerrarHojas(); return; }
+  if (d.cat) { $$(".cat").forEach(c => c.classList.toggle("elegida", c === t)); E.cat = d.cat; $("#buscarExplorar").value = ""; setTimeout(() => tab("explorar"), 160); return; }
+  if (d.chip) { E.cat = d.chip; pintarExplorar(); return; }
+  if (d.orden) { E.orden = d.orden; cerrarHojas(); if (!$("#explorar").classList.contains("activa")) tab("explorar"); else pintarExplorar(); aviso("Ordenado ✔"); return; }
+  if (d.tam !== undefined) { E.prod.tamano = d.tam; actualizarFicha(); return; }
+  if (d.ag !== undefined) { const a = E.prod.agregados, i = a.indexOf(d.ag); if (i >= 0) a.splice(i, 1); else a.push(d.ag); actualizarFicha(); return; }
+  if (d.pago) { E.perfil.pago = d.pago; $$(".pago").forEach(b => b.classList.toggle("elegido", b === t)); $('#entrega .campo[data-campo="pago"]').classList.remove("error"); return; }
+  if (d.mas !== undefined) { E.carrito[+d.mas].cantidad++; guardar("carrito", E.carrito); actualizarContador(true); pintarCarrito(); return; }
+  if (d.menos !== undefined) { const it = E.carrito[+d.menos]; if (it.cantidad > 1) it.cantidad--; else E.carrito.splice(+d.menos, 1); guardar("carrito", E.carrito); actualizarContador(); pintarCarrito(); return; }
+  if (d.borrar !== undefined) { E.carrito.splice(+d.borrar, 1); guardar("carrito", E.carrito); actualizarContador(); pintarCarrito(); aviso("Quitado del carrito"); return; }
+  if (d.prod) { abrirProducto(d.prod); return; }
+});
+$("#velo").onclick = cerrarHojas;
+$("#btnMenu").onclick = abrirLateral;
+$("#btnAvatar").onclick = () => tab("perfil");
+$("#btnUbicacion").onclick = () => tab("perfil");
+$("#btnAvisos").onclick = () => {
+  const m = E.menu, es = m.especial;
+  abrirHoja(`<h3>Avisos</h3>
+    ${es && producto(es.producto) ? `<button class="opcion" data-prod="${esc(es.producto)}"><span class="emo">⚡</span><span><b>${esc(T("especialChip"))}</b><br><small>${esc(es.titulo)} · ${esc(es.etiqueta || "")} ${esc((es.etiquetaChica || "").toLowerCase())}</small></span></button>` : ""}
+    <div class="opcion"><span class="emo">🛵</span><span><b>Entrega</b><br><small>Tiempo estimado ${esc(m.negocio.tiempoEntrega || "")}</small></span></div>
+    <div class="opcion"><span class="emo">🔒</span><span><b>Tus datos</b><br><small>Se guardan solo en tu celular</small></span></div>`);
+  $(".campana .punto").style.display = "none";
+};
+$("#btnFiltro").onclick = ev => { ev.preventDefault(); abrirOrden(); };
+$("#btnFiltroInicio").onclick = ev => { ev.preventDefault(); abrirOrden(); };
+$("#buscarInicio").addEventListener("keydown", ev => { if (ev.key === "Enter") { ev.preventDefault(); irABuscar(); } });
+$("#buscarInicio").addEventListener("input", () => { if ($("#buscarInicio").value.length >= 2) irABuscar(); });
+function irABuscar() {
+  const q = $("#buscarInicio").value; E.cat = "todo";
+  $("#buscarExplorar").value = q; $("#buscarInicio").value = "";
+  tab("explorar"); const i = $("#buscarExplorar"); i.focus(); i.setSelectionRange(q.length, q.length);
+}
+$("#buscarExplorar").addEventListener("input", pintarExplorar);
+$("#menos").onclick = () => { if (E.prod.cantidad > 1) { E.prod.cantidad--; actualizarFicha(); } };
+$("#masCant").onclick = () => { if (E.prod.cantidad < 50) { E.prod.cantidad++; actualizarFicha(); } };
+$("#btnAgregar").onclick = () => {
+  const p = producto(E.prod.id);
+  if (!agregarAlCarrito(E.prod.id, E.prod.tamano, E.prod.agregados, E.prod.cantidad)) return;
+  aviso(`✔ ${E.prod.cantidad} × ${p.nombre} al carrito`);
+  window.atras();
+};
+$("#vaciar").onclick = () => abrirHoja(`<h3>¿Vaciar el carrito?</h3><p>Se quitan todos los productos.</p>
+  <button class="boton ancho" id="siVaciar">Sí, vaciar</button><div style="height:8px"></div><button class="boton ancho gris" data-cerrar>No</button>`);
+document.addEventListener("click", ev => {
+  if (ev.target.closest("#siVaciar")) { E.carrito = []; guardar("carrito", []); actualizarContador(); pintarCarrito(); cerrarHojas(); }
+  if (ev.target.closest("#btnCompartir")) {
+    const p = producto(E.prod.id), txt = `Mirá esta delicia de ${E.menu.negocio.nombre}: ${p.nombre} a ${plata(p.precio)} 😋`;
+    if (NATIVO && window.CeciApp.compartir) window.CeciApp.compartir(txt);
+    else if (navigator.share) navigator.share({ text: txt, url: location.protocol.startsWith("http") ? location.href.split("?")[0] : undefined }).catch(() => {});
+    else aviso("Copiá y compartí: " + p.nombre);
+  }
+  if (ev.target.closest("#btnHablar")) {
+    cerrarHojas();
+    const n = String(E.menu.negocio.whatsapp).replace(/\D/g, "");
+    if (NATIVO) { if (window.CeciApp.abrirWhatsApp(n, "Hola! 👋") !== "ok") aviso("No encontramos WhatsApp en este celular"); }
+    else if (!VISTA) window.open(`https://api.whatsapp.com/send?phone=${n}`, "_blank");
+  }
+});
+$("#btnEnviar").onclick = enviarPedido;
+$("#btnReabrir").onclick = () => abrirWhatsApp(E.ultimoMensaje);
+$("#btnYaEnvie").onclick = () => { E.carrito = []; guardar("carrito", []); actualizarContador(); tab("inicio"); aviso(T("gracias") || "¡Gracias!"); };
+["fNombre", "fTelefono", "fDireccion", "fReferencia", "fNota"].forEach(id =>
+  document.getElementById(id).addEventListener("change", () => { leerFormulario(); guardar("perfil", E.perfil); pintarCabecera(); }));
+["fNombre", "fTelefono", "fDireccion", "fReferencia"].forEach(id =>
+  document.getElementById(id).addEventListener("input", ev => ev.target.closest(".campo").classList.remove("error")));
+$("#btnGuardarPerfil").onclick = () => {
+  E.perfil.nombre = $("#pNombre").value.trim(); E.perfil.telefono = $("#pTelefono").value.trim();
+  E.perfil.direccion = $("#pDireccion").value.trim(); E.perfil.referencia = $("#pReferencia").value.trim();
+  if (E.perfil.telefono && !telefonoValido(E.perfil.telefono)) { aviso("Ese teléfono no parece válido"); return; }
+  guardar("perfil", E.perfil); pintarPerfil(); pintarCabecera(); aviso("Datos guardados ✔");
+};
+matchMedia("(prefers-color-scheme: light)").addEventListener("change", () => E.menu && aplicarDiseno());
+
+// ═════════ CARGAR EL MENÚ ═════════
+function conTiempo(promesa, ms) { return Promise.race([promesa, new Promise((_, no) => setTimeout(() => no(new Error("tiempo")), ms))]); }
+async function bajarJSON(url) { const r = await conTiempo(fetch(url, { cache: "no-store" }), 8000); if (!r.ok) throw new Error(r.status); return r.json(); }
+function usarMenu(m, base) {
+  E.menu = m; E.base = base || "";
+  limpiarCarrito();
+  aplicarDiseno(); pintarInicio(); actualizarContador();
+  const v = E.historial[E.historial.length - 1];
+  if (v === "producto" && E.prod && producto(E.prod.id)) abrirProducto(E.prod.id, true);
+  else mostrar(v === "producto" ? "inicio" : v);
+}
+async function cargarMenu() {
+  if (PARAMS.get("menu")) return usarMenu(await bajarJSON(PARAMS.get("menu")));
+  if (location.protocol.startsWith("http")) return usarMenu(await bajarJSON("menu.json?t=" + Date.now()));
+  // APK: arranca con el último menú publicado que bajó (o el que trae adentro) y busca uno nuevo
+  const local = JSON.parse(window.CeciApp.leerMenu());
+  const guardado = leer("menuPublicado", null);
+  if (guardado && (guardado.publicado || "") > (local.publicado || "")) usarMenu(guardado, BUZON); else usarMenu(local, "");
+  try {
+    const nuevo = await bajarJSON(BUZON + "menu.json?t=" + Date.now());
+    if ((nuevo.publicado || "") >= (local.publicado || "") && JSON.stringify(nuevo) !== JSON.stringify(E.menu)) {
+      guardar("menuPublicado", nuevo); usarMenu(nuevo, BUZON);
+    }
+  } catch (e) { /* sin internet o buzón todavía sin crear: sigue con lo que tiene */ }
+}
+async function arrancar() {
+  E.carrito = leer("carrito", []);
+  E.favs = new Set(leer("favs", []));
+  E.perfil = Object.assign(E.perfil, leer("perfil", {}));
+  E.modo = leer("modo", null);
+  if (NATIVO && window.CeciApp.version) $("#version").textContent = window.CeciApp.version();
+  if (VISTA) { $("#bienvenida").classList.add("fuera"); window.parent.postMessage({ tipo: "listo" }, "*"); return; }
+  try { await cargarMenu(); }
+  catch (e) { document.body.innerHTML = `<p style="padding:30px;color:#fff">No se pudo leer el menú (menu.json): ${esc(e.message)}</p>`; return; }
+  setTimeout(() => $("#bienvenida").classList.add("fuera"), window.__sinBienvenida ? 0 : 1500);
+}
+// vista previa del panel: el panel manda los datos del borrador y a qué pantalla ir
+window.addEventListener("message", ev => {
+  const m = ev.data || {};
+  if (m.tipo === "hola" && VISTA) window.parent.postMessage({ tipo: "listo" }, "*");
+  if (m.tipo === "datos" && m.datos && m.datos.negocio) usarMenu(m.datos, "");
+  if (m.tipo === "ir" && E.menu) {
+    cerrarHojas();
+    if (m.vista === "producto" && producto(m.id)) abrirProducto(m.id, true);
+    else if (m.vista === "bienvenida") { const b = $("#bienvenida"); b.classList.remove("fuera"); setTimeout(() => b.classList.add("fuera"), 2200); }
+    else if (m.vista === "listo") { E.historial = ["inicio", "listo"]; mostrar("listo"); }
+    else if (m.vista === "mensaje") {
+      // pedido de ejemplo con los dos primeros productos, sin tocar el carrito real
+      const carrito = E.carrito, perfil = E.perfil, ps = productos().slice(0, 2);
+      E.carrito = ps.map((p, i) => ({ id: p.id, tamano: (p.tamanos || [])[0] ? p.tamanos[0].nombre : "", agregados: (p.agregados || []).slice(0, i ? 0 : 1).map(a => a.nombre), cantidad: i ? 1 : 2 }));
+      E.perfil = { nombre: "Cliente de ejemplo", telefono: "099 123 456", direccion: "Av. Ejemplo 1234", referencia: "Esquina Rivera", pago: pagos()[0].id, nota: "Sin cebolla" };
+      const txt = armarMensaje(); E.carrito = carrito; E.perfil = perfil;
+      abrirHoja(`<h3>Así llega el pedido</h3><pre style="white-space:pre-wrap;font-family:var(--letra-texto);font-size:13px;line-height:1.45;color:var(--texto2);margin:0">${esc(txt)}</pre>`);
+    }
+    else tab(m.vista || "inicio");
+  }
+  if (m.tipo === "modo") { E.modo = m.modo; aplicarDiseno(); }
+});
+window.Ceci = { E, armarMensaje, precioUnidad, totalCarrito, plata };
+arrancar();
+</script>
+</body>
+</html>

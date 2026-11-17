@@ -1,0 +1,591 @@
+{
+  "_LEEME": "Lo edita el Panel de Delicias de Ceci (Escritorio). Si lo tocás a mano, cuidá las comas. EJEMPLO hasta cargar el menú real.",
+  "ejemplo": true,
+  "publicado": "2026-11-16 23:18:14",
+  "app": {
+    "nombre": "Delicias de Ceci"
+  },
+  "negocio": {
+    "nombre": "Delicias de Ceci",
+    "whatsapp": "59896651093",
+    "moneda": "$",
+    "costoEnvio": 0,
+    "textoEnvio": "A coordinar",
+    "tiempoEntrega": "30–40 min"
+  },
+  "textos": {
+    "saludo": "Hola",
+    "titulo": "Buena comida\n¡Buen *ánimo!*",
+    "bajada": "Pedí tu comida favorita, hecha en casa por Ceci y lista para llegar a tu puerta.",
+    "buscador": "Buscar comida, combos…",
+    "especialChip": "Especial de hoy",
+    "botonEspecial": "Pedir ahora",
+    "populares": "Más populares",
+    "verTodo": "Ver todo",
+    "bienvenidaTitulo": "Delicias de *Ceci*",
+    "bienvenidaSub": "Comida rica, hecha con amor",
+    "botonEnviar": "Enviar pedido",
+    "listoTitulo": "¡Ya casi!",
+    "listoTexto": "Se abrió WhatsApp con tu pedido escrito.\n*Apretá el botón de enviar ➤* para que le llegue a Ceci.",
+    "gracias": "¡Gracias por tu pedido! 🧡",
+    "avisoEjemplo": "Menú de EJEMPLO: productos y precios todavía no son los reales."
+  },
+  "secciones": {
+    "buscador": true,
+    "categorias": true,
+    "especial": true,
+    "populares": true
+  },
+  "diseno": {
+    "modo": "oscuro",
+    "acento": "#ff7a18",
+    "letraTitulos": "Poppins",
+    "letraTexto": "Poppins",
+    "tamano": 100
+  },
+  "pagos": [
+    {
+      "id": "efectivo",
+      "nombre": "Efectivo",
+      "emo": "💵"
+    },
+    {
+      "id": "transferencia",
+      "nombre": "Transferencia",
+      "emo": "🏦"
+    },
+    {
+      "id": "tarjeta",
+      "nombre": "Tarjeta al recibir",
+      "emo": "💳"
+    }
+  ],
+  "mensaje": "🍔 *NUEVO PEDIDO · {negocio}*\nPedido N.º {numero}\n\n👤 *Nombre:* {nombre}\n📞 *Teléfono:* {telefono}\n📍 *Dirección:* {direccion}\n🧭 *Referencia:* {referencia}\n\n🛒 *Pedido:*\n{productos}\n\n💰 *TOTAL: {total}*\n🛵 Envío: {envio}\n💳 *Pago:* {pago}\n📝 *Nota:* {nota}",
+  "categorias": [
+    {
+      "id": "hamburguesas",
+      "nombre": "Hamburguesa",
+      "singular": "hamburguesa",
+      "icono": "🍔"
+    },
+    {
+      "id": "pizzas",
+      "nombre": "Pizza",
+      "singular": "pizza",
+      "icono": "🍕"
+    },
+    {
+      "id": "chivitos",
+      "nombre": "Chivito",
+      "singular": "chivito",
+      "icono": "🥪"
+    },
+    {
+      "id": "pollo",
+      "nombre": "Pollo",
+      "singular": "porción",
+      "icono": "🍗"
+    },
+    {
+      "id": "papas",
+      "nombre": "Papas fritas",
+      "singular": "porción",
+      "icono": "🍟"
+    },
+    {
+      "id": "bebidas",
+      "nombre": "Bebidas",
+      "singular": "bebida",
+      "icono": "🥤"
+    }
+  ],
+  "especial": {
+    "producto": "combo-picante",
+    "titulo": "Combo de hamburguesa picante",
+    "detalle": "Hamburguesa + papas + bebida",
+    "etiqueta": "20%",
+    "etiquetaChica": "DE DESCUENTO"
+  },
+  "productos": [
+    {
+      "id": "combo-picante",
+      "categoria": "hamburguesas",
+      "nombre": "Combo hamburguesa picante",
+      "descripcion": "Hamburguesa de pollo picante, papas fritas medianas y un refresco de 600 ml.",
+      "precio": 490,
+      "precioAntes": 610,
+      "foto": "fotos/combo-picante.jpg",
+      "tiempo": "25–30 min",
+      "etiqueta": "Especial de hoy",
+      "popular": false,
+      "tamanos": [
+        {
+          "nombre": "Normal",
+          "extra": 0
+        },
+        {
+          "nombre": "Agrandado",
+          "extra": 90
+        }
+      ],
+      "agregados": [
+        {
+          "nombre": "Queso extra",
+          "precio": 40
+        },
+        {
+          "nombre": "Panceta",
+          "precio": 60
+        }
+      ],
+      "agotado": false,
+      "visible": true
+    },
+    {
+      "id": "hamburguesa-queso",
+      "categoria": "hamburguesas",
+      "nombre": "Hamburguesa con queso",
+      "descripcion": "Medallón de carne a la plancha, cheddar derretido, lechuga, tomate y pan con sésamo.",
+      "precio": 320,
+      "foto": "fotos/hamburguesa-queso.jpg",
+      "tiempo": "20–25 min",
+      "popular": true,
+      "tamanos": [
+        {
+          "nombre": "Mediana",
+          "extra": 0
+        },
+        {
+          "nombre": "Grande",
+          "extra": 70
+        },
+        {
+          "nombre": "Extra grande",
+          "extra": 130
+        }
+      ],
+      "agregados": [
+        {
+          "nombre": "Queso extra",
+          "precio": 40
+        },
+        {
+          "nombre": "Otro medallón",
+          "precio": 110
+        },
+        {
+          "nombre": "Panceta",
+          "precio": 60
+        },
+        {
+          "nombre": "Huevo frito",
+          "precio": 35
+        }
+      ],
+      "agotado": false,
+      "visible": true
+    },
+    {
+      "id": "hamburguesa-pollo-picante",
+      "categoria": "hamburguesas",
+      "nombre": "Hamburguesa de pollo picante",
+      "descripcion": "Medallón de pollo crujiente con lechuga fresca, tomate, cebolla, queso cheddar y nuestra salsa picante especial.",
+      "precio": 350,
+      "foto": "fotos/hamburguesa-pollo-picante.jpg",
+      "tiempo": "15–20 min",
+      "etiqueta": "Más vendido",
+      "popular": true,
+      "tamanos": [
+        {
+          "nombre": "Mediana",
+          "extra": 0
+        },
+        {
+          "nombre": "Grande",
+          "extra": 70
+        },
+        {
+          "nombre": "Extra grande",
+          "extra": 130
+        }
+      ],
+      "agregados": [
+        {
+          "nombre": "Queso extra",
+          "precio": 40
+        },
+        {
+          "nombre": "Otro medallón",
+          "precio": 100
+        },
+        {
+          "nombre": "Panceta",
+          "precio": 60
+        }
+      ],
+      "agotado": false,
+      "visible": true
+    },
+    {
+      "id": "hamburguesa-bbq",
+      "categoria": "hamburguesas",
+      "nombre": "Hamburguesa BBQ",
+      "descripcion": "Doble cheddar, panceta crocante, aros de cebolla y salsa barbacoa ahumada en pan brioche.",
+      "precio": 390,
+      "foto": "fotos/hamburguesa-bbq.jpg",
+      "tiempo": "20–25 min",
+      "popular": true,
+      "tamanos": [
+        {
+          "nombre": "Mediana",
+          "extra": 0
+        },
+        {
+          "nombre": "Grande",
+          "extra": 70
+        },
+        {
+          "nombre": "Extra grande",
+          "extra": 130
+        }
+      ],
+      "agregados": [
+        {
+          "nombre": "Queso extra",
+          "precio": 40
+        },
+        {
+          "nombre": "Otro medallón",
+          "precio": 110
+        },
+        {
+          "nombre": "Salsa BBQ extra",
+          "precio": 25
+        }
+      ],
+      "agotado": false,
+      "visible": true
+    },
+    {
+      "id": "chivito-al-pan",
+      "categoria": "chivitos",
+      "nombre": "Chivito canadiense al pan",
+      "descripcion": "Lomito a la plancha, jamón, muzzarella, panceta, huevo, lechuga y tomate en pan tortuga.",
+      "precio": 480,
+      "foto": "fotos/chivito-al-pan.jpg",
+      "tiempo": "25–30 min",
+      "popular": true,
+      "agregados": [
+        {
+          "nombre": "Papas fritas al costado",
+          "precio": 120
+        },
+        {
+          "nombre": "Aceitunas",
+          "precio": 30
+        },
+        {
+          "nombre": "Morrón asado",
+          "precio": 30
+        }
+      ],
+      "agotado": false,
+      "visible": true
+    },
+    {
+      "id": "chivito-al-plato",
+      "categoria": "chivitos",
+      "nombre": "Chivito al plato",
+      "descripcion": "Lomito con jamón, muzzarella y huevo frito, acompañado de papas fritas y ensalada rusa.",
+      "precio": 590,
+      "foto": "fotos/chivito-al-plato.jpg",
+      "tiempo": "30–35 min",
+      "popular": false,
+      "tamanos": [
+        {
+          "nombre": "Para 1",
+          "extra": 0
+        },
+        {
+          "nombre": "Para 2",
+          "extra": 480
+        }
+      ],
+      "agregados": [
+        {
+          "nombre": "Panceta",
+          "precio": 60
+        },
+        {
+          "nombre": "Huevo extra",
+          "precio": 35
+        }
+      ],
+      "agotado": false,
+      "visible": true
+    },
+    {
+      "id": "pizza-muzzarella",
+      "categoria": "pizzas",
+      "nombre": "Pizza muzzarella",
+      "descripcion": "Masa casera, salsa de tomate, abundante muzzarella, aceitunas y orégano.",
+      "precio": 420,
+      "foto": "fotos/pizza-muzzarella.jpg",
+      "tiempo": "25–30 min",
+      "popular": true,
+      "tamanos": [
+        {
+          "nombre": "Mediana",
+          "extra": 0
+        },
+        {
+          "nombre": "Grande",
+          "extra": 120
+        },
+        {
+          "nombre": "Familiar",
+          "extra": 220
+        }
+      ],
+      "agregados": [
+        {
+          "nombre": "Doble muzzarella",
+          "precio": 90
+        },
+        {
+          "nombre": "Jamón",
+          "precio": 70
+        },
+        {
+          "nombre": "Morrón",
+          "precio": 40
+        }
+      ],
+      "agotado": false,
+      "visible": true
+    },
+    {
+      "id": "pizza-napolitana",
+      "categoria": "pizzas",
+      "nombre": "Pizza napolitana",
+      "descripcion": "Muzzarella, rodajas de tomate fresco, ajo y albahaca.",
+      "precio": 460,
+      "foto": "fotos/pizza-napolitana.jpg",
+      "tiempo": "25–30 min",
+      "popular": false,
+      "tamanos": [
+        {
+          "nombre": "Mediana",
+          "extra": 0
+        },
+        {
+          "nombre": "Grande",
+          "extra": 120
+        },
+        {
+          "nombre": "Familiar",
+          "extra": 220
+        }
+      ],
+      "agregados": [
+        {
+          "nombre": "Doble muzzarella",
+          "precio": 90
+        },
+        {
+          "nombre": "Jamón",
+          "precio": 70
+        }
+      ],
+      "agotado": false,
+      "visible": true
+    },
+    {
+      "id": "alitas-picantes",
+      "categoria": "pollo",
+      "nombre": "Alitas picantes",
+      "descripcion": "Alitas de pollo glaseadas con salsa picante, sésamo y lima.",
+      "precio": 360,
+      "foto": "fotos/alitas-picantes.jpg",
+      "tiempo": "20–25 min",
+      "popular": true,
+      "tamanos": [
+        {
+          "nombre": "8 alitas",
+          "extra": 0
+        },
+        {
+          "nombre": "12 alitas",
+          "extra": 160
+        },
+        {
+          "nombre": "20 alitas",
+          "extra": 400
+        }
+      ],
+      "agregados": [
+        {
+          "nombre": "Salsa extra",
+          "precio": 25
+        },
+        {
+          "nombre": "Papas fritas",
+          "precio": 120
+        }
+      ],
+      "agotado": false,
+      "visible": true
+    },
+    {
+      "id": "tiras-de-pollo",
+      "categoria": "pollo",
+      "nombre": "Tiras de pollo crispy",
+      "descripcion": "Tiras de pechuga rebozadas y crocantes con salsa a elección.",
+      "precio": 330,
+      "foto": "fotos/tiras-de-pollo.jpg",
+      "tiempo": "15–20 min",
+      "popular": false,
+      "tamanos": [
+        {
+          "nombre": "6 tiras",
+          "extra": 0
+        },
+        {
+          "nombre": "10 tiras",
+          "extra": 180
+        }
+      ],
+      "agregados": [
+        {
+          "nombre": "Salsa extra",
+          "precio": 25
+        },
+        {
+          "nombre": "Papas fritas",
+          "precio": 120
+        }
+      ],
+      "agotado": false,
+      "visible": true
+    },
+    {
+      "id": "papas-fritas",
+      "categoria": "papas",
+      "nombre": "Papas fritas",
+      "descripcion": "Papas doradas y crocantes con sal.",
+      "precio": 180,
+      "foto": "fotos/papas-fritas.jpg",
+      "tiempo": "10–15 min",
+      "popular": false,
+      "tamanos": [
+        {
+          "nombre": "Chica",
+          "extra": 0
+        },
+        {
+          "nombre": "Mediana",
+          "extra": 50
+        },
+        {
+          "nombre": "Grande",
+          "extra": 100
+        }
+      ],
+      "agregados": [
+        {
+          "nombre": "Cheddar",
+          "precio": 50
+        },
+        {
+          "nombre": "Ketchup y mayonesa",
+          "precio": 0
+        }
+      ],
+      "agotado": false,
+      "visible": true
+    },
+    {
+      "id": "papas-cheddar",
+      "categoria": "papas",
+      "nombre": "Papas con cheddar y panceta",
+      "descripcion": "Papas fritas bañadas en cheddar con panceta crocante y verdeo.",
+      "precio": 260,
+      "foto": "fotos/papas-cheddar.jpg",
+      "tiempo": "15 min",
+      "popular": true,
+      "tamanos": [
+        {
+          "nombre": "Mediana",
+          "extra": 0
+        },
+        {
+          "nombre": "Grande",
+          "extra": 90
+        }
+      ],
+      "agregados": [
+        {
+          "nombre": "Doble cheddar",
+          "precio": 50
+        },
+        {
+          "nombre": "Huevo frito",
+          "precio": 35
+        }
+      ],
+      "agotado": false,
+      "visible": true
+    },
+    {
+      "id": "refresco-cola",
+      "categoria": "bebidas",
+      "nombre": "Refresco cola",
+      "descripcion": "Bien frío.",
+      "precio": 110,
+      "foto": "fotos/refresco-cola.jpg",
+      "tiempo": "5 min",
+      "popular": false,
+      "tamanos": [
+        {
+          "nombre": "600 ml",
+          "extra": 0
+        },
+        {
+          "nombre": "1,5 L",
+          "extra": 70
+        }
+      ],
+      "agregados": [],
+      "agotado": false,
+      "visible": true
+    },
+    {
+      "id": "limonada",
+      "categoria": "bebidas",
+      "nombre": "Limonada casera",
+      "descripcion": "Limón exprimido en el momento, menta y hielo.",
+      "precio": 140,
+      "foto": "fotos/limonada.jpg",
+      "tiempo": "5 min",
+      "popular": false,
+      "tamanos": [
+        {
+          "nombre": "Vaso",
+          "extra": 0
+        },
+        {
+          "nombre": "Jarra 1 L",
+          "extra": 160
+        }
+      ],
+      "agregados": [
+        {
+          "nombre": "Jengibre",
+          "precio": 20
+        }
+      ],
+      "agotado": false,
+      "visible": true
+    }
+  ]
+}

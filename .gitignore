@@ -1,0 +1,9 @@
+# Panel, firma y credenciales NUNCA van acá: esta carpeta es pública
+*.jks
+*.keystore
+clave.txt
+.env
+*.session
+borradores/
+*.py
+*.pyw
