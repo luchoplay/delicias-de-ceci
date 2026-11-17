@@ -573,34 +573,34 @@
       "visible": true
     },
     {
-      "id": "producto-nuevo",
-      "categoria": "bebidas",
-      "nombre": "Cerveza Brahama",
-      "descripcion": "",
-      "precio": 89,
-      "foto": "fotos/cerveza-brahama-003353.jpg",
-      "tiempo": "",
-      "popular": true,
       "agotado": false,
-      "visible": true,
+      "agregados": [],
+      "categoria": "bebidas",
+      "descripcion": "",
+      "estrellas": "4.9",
+      "etiqueta": "Más vendido",
+      "foto": "fotos/cerveza-brahama-003353.jpg",
+      "id": "producto-nuevo",
+      "nombre": "Cerveza Brahama",
+      "popular": true,
+      "precio": 89,
+      "precioAntes": 105,
+      "resenas": "214",
       "tamanos": [
         {
-          "nombre": "LATA",
-          "extra": 0
+          "extra": 0,
+          "nombre": "LATA"
         },
         {
-          "nombre": "1 Ltro",
-          "extra": 106
+          "extra": 106,
+          "nombre": "1 Ltro"
         }
       ],
-      "agregados": [],
-      "precioAntes": 105,
-      "etiqueta": "Más vendido",
-      "estrellas": "4.9",
-      "resenas": "214"
+      "tiempo": "",
+      "visible": true
     }
   ],
-  "publicado": "2026-11-17 03:42:01",
+  "publicado": "2026-11-17 03:56:44",
   "qr": {
     "sub": "Escaneá el código con la cámara",
     "titulo": "¡Pedí desde tu celular!"
@@ -610,6 +610,12 @@
     "categorias": true,
     "especial": true,
     "populares": true
+  },
+  "sorteo": {
+    "activo": true,
+    "premio": "Una hamburguesa o una pizza",
+    "texto": "",
+    "urna": "https://script.google.com/macros/s/AKfycbxC3w681GrY0p371adADo_Nc8uxXFYZaWcTa-5NP7ZqICSEfAecKrUpjFnII4FuQSd0Mg/exec"
   },
   "textos": {
     "avisoEjemplo": "Menú de EJEMPLO: productos y precios todavía no son los reales.",
@@ -627,11 +633,5 @@
     "saludo": "Hola Gloton/a",
     "titulo": "Buena comida \n¡Delicias de *Ceci la Panadera!*",
     "verTodo": "Ver todo"
-  },
-  "sorteo": {
-    "activo": true,
-    "premio": "Una hamburguesa o una pizza",
-    "texto": "",
-    "urna": "https://script.google.com/macros/s/AKfycbxC3w681GrY0p371adADo_Nc8uxXFYZaWcTa-5NP7ZqICSEfAecKrUpjFnII4FuQSd0Mg/exec"
   }
 }
