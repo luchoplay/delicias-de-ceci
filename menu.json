@@ -48,7 +48,7 @@
     "modo": "oscuro",
     "tamano": 100
   },
-  "ejemplo": true,
+  "ejemplo": false,
   "especial": {
     "detalle": "Hamburguesa + papas + bebida",
     "etiqueta": "20%",
@@ -569,7 +569,7 @@
       "visible": true
     }
   ],
-  "publicado": "2026-11-16 23:55:32",
+  "publicado": "2026-11-16 23:58:43",
   "secciones": {
     "buscador": true,
     "categorias": true,
@@ -592,5 +592,9 @@
     "saludo": "Hola Gloton/a",
     "titulo": "Buena comida \n¡Delicias de *Ceci la Panadera!*",
     "verTodo": "Ver todo"
+  },
+  "qr": {
+    "titulo": "¡Pedí desde tu celular!",
+    "sub": "Escaneá el código con la cámara"
   }
 }
