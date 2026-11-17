@@ -3,9 +3,9 @@
   "app": {
     "apk": "Delicias-de-Ceci.apk",
     "nombre": "Delicias Ceci",
-    "versionMinima": 8,
-    "versionUltima": 8,
-    "versionUltimaNombre": "1.7"
+    "versionMinima": 9,
+    "versionUltima": 9,
+    "versionUltimaNombre": "1.8"
   },
   "categorias": [
     {
@@ -600,7 +600,7 @@
       "visible": true
     }
   ],
-  "publicado": "2026-11-17 16:21:57",
+  "publicado": "2026-11-17 16:24:10",
   "qr": {
     "sub": "Escaneá el código con la cámara",
     "titulo": "¡Pedí desde tu celular!"
