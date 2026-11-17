@@ -294,6 +294,9 @@ img.foto-falta { background: var(--card2); }
 .nota-chica { font-size: 12px; color: var(--suave); margin: 4px 4px 14px; }
 .consiente { display: flex; gap: 10px; align-items: flex-start; margin: 12px 4px 0; font-size: 13px; color: var(--texto2); line-height: 1.4; }
 .consiente input { width: 22px; height: 22px; accent-color: var(--acento); flex: none; margin: 0; }
+.videoad { position: relative; margin-top: 16px; border-radius: 26px; overflow: hidden; aspect-ratio: 4 / 5; background: #111; box-shadow: var(--sombra); }
+.videoad video { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; }
+.videoad .tit { position: absolute; left: 0; right: 0; bottom: 0; padding: 38px 18px 16px; color: #fff; font-family: var(--letra-titulos); font-size: 1.35em; font-weight: 800; background: linear-gradient(0deg, rgba(0,0,0,.65), transparent); }
 .sorteo { margin-top: 14px; padding: 14px 16px; border-radius: 20px; background: linear-gradient(120deg, var(--acento-suave), transparent); border: 1px dashed color-mix(in srgb, var(--acento) 55%, transparent); font-size: 14px; line-height: 1.45; }
 .sorteo b { font-family: var(--letra-titulos); font-size: 16px; }
 .chance { margin-top: 10px !important; padding: 10px 14px; border-radius: 14px; background: var(--acento-suave); color: var(--texto) !important; font-weight: 800; }
@@ -381,6 +384,7 @@ img.foto-falta { background: var(--card2); }
   </label>
 
   <div class="categorias" id="catsInicio"></div>
+  <div id="videoInicio"></div>
   <div id="especial"></div>
   <div class="sorteo" id="cartelSorteo" hidden></div>
   <div class="aviso-ejemplo" id="avisoEjemplo" hidden></div>
@@ -757,6 +761,7 @@ function pintarInicio() {
   $("#bloquePopulares").hidden = !SEC("populares");
   $("#catsInicio").innerHTML = m.categorias.map((c, i) =>
     `<button class="cat${i === 0 ? " elegida" : ""}" data-cat="${esc(c.id)}"><span class="emo">${esc(c.icono)}</span>${esc(c.nombre)}</button>`).join("");
+  pintarVideo();
   const ed = SEC("especial") ? especialDeHoy() : null, es = ed && ed.prod;
   $("#especial").innerHTML = es ? `
     <div class="especial tocable" data-prod="${esc(es.id)}">
@@ -773,6 +778,26 @@ function pintarInicio() {
   pintarSorteo();
   pintarPopulares();
   pintarCabecera();
+}
+// video corto de publicidad (sin sonido, en bucle): solo suena/corre mientras se ve en pantalla
+let obsVideo = null;
+window.videoRoto = v => {
+  const l = v.dataset.local;
+  if (l && v.getAttribute("src") !== l) { v.src = l; v.load(); return; }
+  const c = v.closest(".videoad"); if (c) c.remove();
+};
+function pintarVideo() {
+  const cont = $("#videoInicio"), vd = E.menu.video || {};
+  if (obsVideo) { obsVideo.disconnect(); obsVideo = null; }
+  if (!vd.activo || !vd.archivo) { cont.innerHTML = ""; return; }
+  cont.innerHTML = `<div class="videoad"><video src="${foto(vd.archivo)}" data-local="${esc(vd.archivo)}" ${vd.portada ? `poster="${foto(vd.portada)}"` : ""}
+    muted loop playsinline webkit-playsinline preload="auto" onerror="videoRoto(this)"></video>${vd.titulo ? `<div class="tit">${esc(vd.titulo)}</div>` : ""}</div>`;
+  const v = cont.querySelector("video"); v.muted = true;
+  if ("IntersectionObserver" in window) {
+    obsVideo = new IntersectionObserver(es => es.forEach(e => { if (e.isIntersecting) { const p = v.play(); if (p && p.catch) p.catch(() => {}); } else v.pause(); }), { threshold: 0.25 });
+    obsVideo.observe(v);
+  } else { const p = v.play(); if (p && p.catch) p.catch(() => {}); }
+  cont.firstElementChild.onclick = () => { if (v.paused) v.play().catch(() => {}); };
 }
 function pintarPopulares() { $("#populares").innerHTML = productos().filter(p => p.popular).map(tarjetaHTML).join(""); }
 function pintarCabecera() {
