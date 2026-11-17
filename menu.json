@@ -1,7 +1,7 @@
 {
   "_LEEME": "Lo edita el Panel de Delicias de Ceci (Escritorio). Si lo tocás a mano, cuidá las comas. EJEMPLO hasta cargar el menú real.",
   "ejemplo": true,
-  "publicado": "2026-11-16 23:18:14",
+  "publicado": "2026-11-16 23:47:44",
   "app": {
     "nombre": "Delicias de Ceci"
   },
@@ -361,7 +361,7 @@
           "precio": 40
         }
       ],
-      "agotado": false,
+      "agotado": true,
       "visible": true
     },
     {
