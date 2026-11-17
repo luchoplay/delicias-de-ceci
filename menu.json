@@ -3,9 +3,9 @@
   "app": {
     "apk": "Delicias-de-Ceci.apk",
     "nombre": "Delicias Ceci",
-    "versionMinima": 7,
-    "versionUltima": 7,
-    "versionUltimaNombre": "1.6"
+    "versionMinima": 8,
+    "versionUltima": 8,
+    "versionUltimaNombre": "1.7"
   },
   "categorias": [
     {
@@ -600,7 +600,7 @@
       "resenas": "214"
     }
   ],
-  "publicado": "2026-11-17 02:28:37",
+  "publicado": "2026-11-17 03:42:01",
   "qr": {
     "sub": "Escaneá el código con la cámara",
     "titulo": "¡Pedí desde tu celular!"
@@ -627,5 +627,11 @@
     "saludo": "Hola Gloton/a",
     "titulo": "Buena comida \n¡Delicias de *Ceci la Panadera!*",
     "verTodo": "Ver todo"
+  },
+  "sorteo": {
+    "activo": true,
+    "premio": "Una hamburguesa o una pizza",
+    "texto": "",
+    "urna": "https://script.google.com/macros/s/AKfycbxC3w681GrY0p371adADo_Nc8uxXFYZaWcTa-5NP7ZqICSEfAecKrUpjFnII4FuQSd0Mg/exec"
   }
 }

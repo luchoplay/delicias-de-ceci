@@ -292,6 +292,11 @@ img.foto-falta { background: var(--card2); }
 .pago.elegido .circ::after { content: ""; width: 10px; height: 10px; border-radius: 50%; background: var(--acento); }
 .campo.error .pago { border-color: #e23b3b; }
 .nota-chica { font-size: 12px; color: var(--suave); margin: 4px 4px 14px; }
+.consiente { display: flex; gap: 10px; align-items: flex-start; margin: 12px 4px 0; font-size: 13px; color: var(--texto2); line-height: 1.4; }
+.consiente input { width: 22px; height: 22px; accent-color: var(--acento); flex: none; margin: 0; }
+.sorteo { margin-top: 14px; padding: 14px 16px; border-radius: 20px; background: linear-gradient(120deg, var(--acento-suave), transparent); border: 1px dashed color-mix(in srgb, var(--acento) 55%, transparent); font-size: 14px; line-height: 1.45; }
+.sorteo b { font-family: var(--letra-titulos); font-size: 16px; }
+.chance { margin-top: 10px !important; padding: 10px 14px; border-radius: 14px; background: var(--acento-suave); color: var(--texto) !important; font-weight: 800; }
 .wa { background: linear-gradient(180deg, #2fd56b, #1aa851); box-shadow: 0 8px 20px rgba(34,197,94,.35); }
 
 .listo { text-align: center; padding-top: 40px; }
@@ -377,6 +382,7 @@ img.foto-falta { background: var(--card2); }
 
   <div class="categorias" id="catsInicio"></div>
   <div id="especial"></div>
+  <div class="sorteo" id="cartelSorteo" hidden></div>
   <div class="aviso-ejemplo" id="avisoEjemplo" hidden></div>
   <div class="aviso-ejemplo" id="avisoConexion" hidden></div>
   <button class="aviso-ejemplo tocable" id="avisoVersion" hidden style="width:100%;text-align:left">✨ Hay una versión nueva de la app. <b>Tocá para actualizar</b></button>
@@ -430,6 +436,7 @@ img.foto-falta { background: var(--card2); }
     <h1>Datos de entrega</h1>
   </div>
   <div class="campo" data-campo="nombre"><label>Nombre <i>*</i></label><input id="fNombre" autocomplete="name" placeholder="¿Cómo te llamás?"><div class="msg">Escribí tu nombre.</div></div>
+  <div class="campo"><label>Apodo (opcional)</label><input id="fApodo" placeholder="¿Cómo te dicen?"></div>
   <div class="campo" data-campo="telefono"><label>Teléfono <i>*</i></label><input id="fTelefono" type="tel" inputmode="tel" autocomplete="tel" placeholder="099 123 456"><div class="msg">Escribí un teléfono válido (por ejemplo 099 123 456).</div></div>
   <div class="campo" data-campo="direccion"><label>Dirección <i>*</i></label><input id="fDireccion" autocomplete="street-address" placeholder="Calle y número, apto."><div class="msg">Escribí la dirección.</div></div>
   <div class="campo" data-campo="referencia"><label>Referencia o esquina <i>*</i></label><input id="fReferencia" placeholder="Ej.: esquina Rivera, portón negro"><div class="msg">Agregá una esquina o referencia para que el repartidor llegue.</div></div>
@@ -439,7 +446,8 @@ img.foto-falta { background: var(--card2); }
   </div>
   <div class="campo"><label>Nota (opcional)</label><textarea id="fNota" placeholder="Ej.: sin cebolla, tocar timbre 2…"></textarea></div>
   <div id="resumenEntrega"></div>
-  <p class="nota-chica">Tus datos quedan guardados solo en este celular para el próximo pedido.</p>
+  <label class="consiente" id="bloqueConsiente" hidden><input type="checkbox" id="fConsiente"> <span id="txtConsiente"></span></label>
+  <p class="nota-chica">Tus datos quedan guardados en este celular para el próximo pedido.</p>
   <button class="boton ancho wa" id="btnEnviar">
     <svg width="22" height="22" viewBox="0 0 24 24" fill="#fff"><path d="M12 2a10 10 0 0 0-8.6 15.1L2 22l5-1.3A10 10 0 1 0 12 2zm5.3 14.2c-.2.6-1.3 1.2-1.8 1.2-.5.1-1 .2-3.3-.7-2.8-1.1-4.6-4-4.7-4.2-.1-.2-1.1-1.5-1.1-2.9s.7-2 1-2.3c.2-.3.5-.3.7-.3h.5c.2 0 .4 0 .6.5l.9 2.1c.1.2.1.4 0 .5l-.3.5-.4.4c-.1.1-.3.3-.1.6.2.3.7 1.2 1.6 2 1.1 1 2 1.3 2.3 1.4.3.1.5.1.6-.1l.9-1.1c.2-.3.4-.2.7-.1l2 1c.3.1.5.2.5.3.1.2.1.8-.1 1.4z"/></svg>
     <span id="txtEnviar">Enviar pedido</span>
@@ -453,6 +461,7 @@ img.foto-falta { background: var(--card2); }
     <h1 id="txtListoTitulo"></h1>
     <p id="txtListoTexto"></p>
     <p style="color:var(--suave);font-size:13.5px">Si no se abrió, tocá «Abrir WhatsApp de nuevo».</p>
+    <p class="chance" id="txtChance" hidden></p>
     <button class="boton ancho" id="btnYaEnvie">Ya lo envié 🎉</button>
     <button class="boton ancho gris" id="btnReabrir">Abrir WhatsApp de nuevo</button>
   </div>
@@ -474,6 +483,7 @@ img.foto-falta { background: var(--card2); }
   </div>
   <button class="opcion" id="modoPerfil" style="margin-bottom:10px;border:1px solid var(--borde);border-radius:16px;padding:12px 14px;background:var(--card)"><span class="emo">🌙</span>Modo oscuro<span class="interruptor"></span></button>
   <div class="campo"><label>Nombre</label><input id="pNombre" autocomplete="name"></div>
+  <div class="campo"><label>Apodo (opcional)</label><input id="pApodo" placeholder="¿Cómo te dicen?"></div>
   <div class="campo"><label>Teléfono</label><input id="pTelefono" type="tel" inputmode="tel"></div>
   <div class="campo"><label>Dirección</label><input id="pDireccion"></div>
   <div class="campo"><label>Referencia o esquina</label><input id="pReferencia"></div>
@@ -532,7 +542,7 @@ window.FUENTES = FUENTES;
 const E = {
   menu: null, base: "",
   carrito: [], favs: new Set(),
-  perfil: { nombre: "", telefono: "", direccion: "", referencia: "", pago: "", nota: "" },
+  perfil: { nombre: "", apodo: "", telefono: "", direccion: "", referencia: "", pago: "", nota: "", consiente: false },
   historial: ["inicio"], cat: "todo", orden: "relevancia", prod: null, ultimoMensaje: "",
   modo: null,      // elección del cliente: "oscuro" / "claro" / null = lo que diga el negocio
 };
@@ -760,6 +770,7 @@ function pintarInicio() {
       </div>
     </div><div class="puntos"><i></i><i></i><i></i></div>` : "";
   $("#avisoEjemplo").hidden = !m.ejemplo;
+  pintarSorteo();
   pintarPopulares();
   pintarCabecera();
 }
@@ -905,7 +916,11 @@ function pintarEntrega() {
   const f = E.perfil;
   if (f.pago && !pagos().some(p => p.id === f.pago)) f.pago = "";
   $("#fNombre").value = f.nombre; $("#fTelefono").value = f.telefono; $("#fDireccion").value = f.direccion;
-  $("#fReferencia").value = f.referencia; $("#fNota").value = f.nota || "";
+  $("#fReferencia").value = f.referencia; $("#fNota").value = f.nota || ""; $("#fApodo").value = f.apodo || "";
+  const s = sorteo();
+  $("#bloqueConsiente").hidden = !s.urna;
+  $("#fConsiente").checked = !!f.consiente;
+  $("#txtConsiente").textContent = `Acepto que ${E.menu.negocio.nombre} guarde mis datos y mis pedidos para atenderme${s.activo ? " y para el sorteo de la semana" : ""}.`;
   $("#pagos").innerHTML = pagos().map(p => `<button class="pago${f.pago === p.id ? " elegido" : ""}" data-pago="${esc(p.id)}"><span class="emo">${esc(p.emo)}</span>${esc(p.nombre)}<span class="circ"></span></button>`).join("");
   $("#resumenEntrega").innerHTML = resumenHTML();
   $$("#entrega .campo").forEach(c => c.classList.remove("error"));
@@ -914,7 +929,8 @@ function telefonoValido(t) { let d = String(t).replace(/\D/g, ""); if (d.startsW
 function leerFormulario() {
   E.perfil.nombre = $("#fNombre").value.trim(); E.perfil.telefono = $("#fTelefono").value.trim();
   E.perfil.direccion = $("#fDireccion").value.trim(); E.perfil.referencia = $("#fReferencia").value.trim();
-  E.perfil.nota = $("#fNota").value.trim();
+  E.perfil.nota = $("#fNota").value.trim(); E.perfil.apodo = $("#fApodo").value.trim();
+  E.perfil.consiente = $("#fConsiente").checked;
 }
 function validar() {
   const f = E.perfil, malos = [];
@@ -945,7 +961,7 @@ function armarMensaje(ahora = new Date()) {
     negocio: E.menu.negocio.nombre,
     numero: `${dos(ahora.getDate())}${dos(ahora.getMonth() + 1)}-${dos(ahora.getHours())}${dos(ahora.getMinutes())}`,
     fecha: `${dos(ahora.getDate())}/${dos(ahora.getMonth() + 1)}/${ahora.getFullYear()} ${dos(ahora.getHours())}:${dos(ahora.getMinutes())}`,
-    nombre: f.nombre, telefono: f.telefono, direccion: f.direccion, referencia: f.referencia,
+    nombre: f.nombre, apodo: f.apodo || "", telefono: f.telefono, direccion: f.direccion, referencia: f.referencia,
     productos: lineasProductos(), subtotal: plata(totalCarrito()), envio: textoEnvio(),
     total: plata(totalAPagar()),
     promos: descuentos().map(d => `🎁 ${d.nombre}: −${plata(d.monto)}`).join("\n"),
@@ -1001,7 +1017,54 @@ async function enviarPedido() {
   E.ultimoMensaje = armarMensaje();
   pintarCabecera();
   $("#aviso").classList.remove("ver");
-  if (abrirWhatsApp(E.ultimoMensaje)) ir("listo");
+  if (abrirWhatsApp(E.ultimoMensaje)) {
+    const anotado = anotarEnUrna();
+    const s = sorteo(), c = $("#txtChance");
+    c.hidden = !s.activo || !s.urna;
+    c.textContent = anotado ? `🎟️ ¡Este pedido suma 1 chance en el sorteo de la semana! (${s.premio})` : "🎟️ Para participar del sorteo, marcá la casilla de aceptar en «Datos de entrega».";
+    ir("listo");
+  }
+}
+
+// ═════════ SORTEO Y URNA DE PEDIDOS (planilla de Google de Lucho) ═════════
+function sorteo() {
+  const s = E.menu.sorteo || {};
+  return { activo: !!s.activo, premio: s.premio || "", texto: s.texto || "", urna: /^https:\/\/script\.google\.com\//.test(s.urna || "") ? s.urna : "" };
+}
+function pintarSorteo() {
+  const s = sorteo(), c = $("#cartelSorteo");
+  c.hidden = !s.activo;
+  if (s.activo) c.innerHTML = `🎟️ <b>Sorteo de la semana</b><br>${esc(s.texto || `Ganate ${s.premio}. ¡Cada pedido es una chance!`)}`;
+}
+// el papelito: solo si el cliente aceptó. Si no hay internet queda en la cola y sale después.
+function anotarEnUrna() {
+  const s = sorteo(), f = E.perfil;
+  if (!s.urna || !f.consiente || VISTA) return false;
+  const ahoraD = ahora();
+  const papel = {
+    id: Date.now().toString(36) + Math.random().toString(36).slice(2, 8),
+    numero: (E.ultimoMensaje.match(/Pedido N\.º ([\w-]+)/) || [])[1] || "",
+    fecha: ahoraD.toISOString(), nombre: f.nombre, apodo: f.apodo || "", telefono: f.telefono,
+    direccion: f.direccion, referencia: f.referencia, pago: (pagos().find(p => p.id === f.pago) || {}).nombre || "",
+    total: totalAPagar(), productos: lineasProductos().replace(/\*/g, ""), promos: descuentos().map(d => `${d.nombre} −${plata(d.monto)}`).join(" · "),
+    nota: f.nota || "", consentimiento: true, origen: NATIVO ? "app" : "web", version: NATIVO && window.CeciApp.version ? window.CeciApp.version() : "web",
+  };
+  const cola = leer("cola", []); cola.push(papel); guardar("cola", cola.slice(-30));
+  vaciarCola();
+  return true;
+}
+let vaciando = false;
+async function vaciarCola() {
+  const s = sorteo(); if (!s.urna || vaciando) return;
+  let cola = leer("cola", []); if (!cola.length) return;
+  vaciando = true;
+  try {
+    for (const papel of [...cola]) {
+      // texto plano: así el celular no pide permiso extra (CORS) y Google lo acepta
+      await conTiempo(fetch(s.urna, { method: "POST", body: JSON.stringify(papel), redirect: "follow" }), 15000);
+      cola = leer("cola", []).filter(x => x.id !== papel.id); guardar("cola", cola);
+    }
+  } catch (e) { /* sin internet: queda en la cola */ } finally { vaciando = false; }
 }
 
 // ═════════ FAVORITOS Y PERFIL ═════════
@@ -1018,7 +1081,7 @@ function pintarFavs() {
 }
 function pintarPerfil() {
   const f = E.perfil;
-  $("#pNombre").value = f.nombre; $("#pTelefono").value = f.telefono; $("#pDireccion").value = f.direccion; $("#pReferencia").value = f.referencia;
+  $("#pNombre").value = f.nombre; $("#pApodo").value = f.apodo || ""; $("#pTelefono").value = f.telefono; $("#pDireccion").value = f.direccion; $("#pReferencia").value = f.referencia;
   $("#perfilNombre").textContent = f.nombre ? "¡Hola, " + f.nombre.split(/\s+/)[0] + "!" : "¡Hola!";
   $("#avatarGrande").textContent = f.nombre ? f.nombre[0].toUpperCase() : "🙂";
   aplicarDiseno();
@@ -1121,12 +1184,12 @@ $("#btnActualizar").onclick = actualizarApp;
 $("#avisoVersion").onclick = actualizarApp;
 $("#btnReabrir").onclick = () => abrirWhatsApp(E.ultimoMensaje);
 $("#btnYaEnvie").onclick = () => { E.carrito = []; guardar("carrito", []); actualizarContador(); tab("inicio"); aviso(T("gracias") || "¡Gracias!"); };
-["fNombre", "fTelefono", "fDireccion", "fReferencia", "fNota"].forEach(id =>
+["fNombre", "fApodo", "fTelefono", "fDireccion", "fReferencia", "fNota", "fConsiente"].forEach(id =>
   document.getElementById(id).addEventListener("change", () => { leerFormulario(); guardar("perfil", E.perfil); pintarCabecera(); }));
 ["fNombre", "fTelefono", "fDireccion", "fReferencia"].forEach(id =>
   document.getElementById(id).addEventListener("input", ev => ev.target.closest(".campo").classList.remove("error")));
 $("#btnGuardarPerfil").onclick = () => {
-  E.perfil.nombre = $("#pNombre").value.trim(); E.perfil.telefono = $("#pTelefono").value.trim();
+  E.perfil.nombre = $("#pNombre").value.trim(); E.perfil.apodo = $("#pApodo").value.trim(); E.perfil.telefono = $("#pTelefono").value.trim();
   E.perfil.direccion = $("#pDireccion").value.trim(); E.perfil.referencia = $("#pReferencia").value.trim();
   if (E.perfil.telefono && !telefonoValido(E.perfil.telefono)) { aviso("Ese teléfono no parece válido"); return; }
   guardar("perfil", E.perfil); pintarPerfil(); pintarCabecera(); aviso("Datos guardados ✔");
@@ -1158,6 +1221,7 @@ async function refrescarMenu() {
     const nuevo = await bajarJSON(urlMenuNuevo());
     ultimaRevision = Date.now();
     E.sinConexion = false;
+    setTimeout(vaciarCola, 500);     // si quedaron papelitos sin mandar, salen ahora
     if (JSON.stringify(nuevo) !== JSON.stringify(E.menu)) {
       if (NATIVO) guardar("menuPublicado", nuevo);
       usarMenu(nuevo, NATIVO ? BUZON : "");
@@ -1266,7 +1330,7 @@ window.addEventListener("message", ev => {
   }
   if (m.tipo === "modo") { E.modo = m.modo; aplicarDiseno(); }
 });
-window.Ceci = { E, armarMensaje, precioUnidad, totalCarrito, plata, refrescarMenu, fechaMenu, descuentos, totalAPagar, promosHoy, especialDeHoy };
+window.Ceci = { E, armarMensaje, precioUnidad, totalCarrito, plata, refrescarMenu, fechaMenu, descuentos, totalAPagar, promosHoy, especialDeHoy, anotarEnUrna, vaciarCola };
 arrancar();
 </script>
 </body>

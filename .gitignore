@@ -7,3 +7,6 @@ clave.txt
 borradores/
 *.py
 *.pyw
+urna.json
+datos/
+*.xlsx
