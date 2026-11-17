@@ -586,7 +586,11 @@
       "tamanos": [
         {
           "nombre": "LATA",
-          "extra": 89
+          "extra": 0
+        },
+        {
+          "nombre": "1 Ltro",
+          "extra": 106
         }
       ],
       "agregados": [],
@@ -596,7 +600,7 @@
       "resenas": "214"
     }
   ],
-  "publicado": "2026-11-17 00:42:09",
+  "publicado": "2026-11-17 01:23:45",
   "qr": {
     "sub": "Escaneá el código con la cámara",
     "titulo": "¡Pedí desde tu celular!"
