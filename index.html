@@ -281,6 +281,10 @@ img.foto-falta { background: var(--card2); }
 .campo textarea { min-height: 76px; resize: none; }
 .campo input:focus, .campo textarea:focus { border-color: var(--acento); box-shadow: 0 0 0 3px var(--acento-suave); }
 .campo.error input, .campo.error textarea { border-color: #e23b3b; }
+.info-nombre { display: inline-grid; place-content: center; width: 19px; height: 19px; margin-left: 6px; border-radius: 50%; border: 1.5px solid var(--acento); color: var(--acento); font: 800 12px/1 var(--letra-titulos); vertical-align: 1px; padding: 0; background: transparent; }
+.reloj { position: absolute; right: 12px; bottom: 12px; display: flex; align-items: center; gap: 6px; padding: 7px 11px; border-radius: 14px; background: rgba(0,0,0,.66); color: #fff; font-size: 12px; line-height: 1.1; backdrop-filter: blur(4px); box-shadow: 0 4px 14px rgba(0,0,0,.3); }
+.reloj b { font-size: 16px; font-weight: 800; font-variant-numeric: tabular-nums; letter-spacing: .5px; color: var(--acento2); }
+.reloj small { display: block; font-size: 10px; opacity: .85; }
 .campo .msg { display: none; color: #e65b5b; font-size: 12.5px; margin: 5px 0 0 4px; }
 .campo.error .msg { display: block; }
 .pagos { display: grid; gap: 8px; }
@@ -439,7 +443,7 @@ img.foto-falta { background: var(--card2); }
     <button class="redondo tocable" data-atras aria-label="Volver"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="m15 18-6-6 6-6"/></svg></button>
     <h1>Datos de entrega</h1>
   </div>
-  <div class="campo" data-campo="nombre"><label>Nombre <i>*</i></label><input id="fNombre" autocomplete="name" placeholder="¿Cómo te llamás?"><div class="msg">Escribí tu nombre.</div></div>
+  <div class="campo" data-campo="nombre"><label>Nombre y apellido <i>*</i><button type="button" class="info-nombre" data-info-nombre aria-label="¿Por qué nombre y apellido?">i</button></label><input id="fNombre" autocomplete="name" placeholder="Ej.: Ana Pérez"><div class="msg">Escribí tu nombre y tu apellido.</div></div>
   <div class="campo"><label>Apodo (opcional)</label><input id="fApodo" placeholder="¿Cómo te dicen?"></div>
   <div class="campo" data-campo="telefono"><label>Teléfono <i>*</i></label><input id="fTelefono" type="tel" inputmode="tel" autocomplete="tel" placeholder="099 123 456"><div class="msg">Escribí un teléfono válido (por ejemplo 099 123 456).</div></div>
   <div class="campo" data-campo="direccion"><label>Dirección <i>*</i></label><input id="fDireccion" autocomplete="street-address" placeholder="Calle y número, apto."><div class="msg">Escribí la dirección.</div></div>
@@ -498,11 +502,12 @@ img.foto-falta { background: var(--card2); }
   <button class="opcion" id="modoPerfil" style="margin-bottom:10px;border:1px solid var(--borde);border-radius:16px;padding:12px 14px;background:var(--card)"><span class="emo">🌙</span>Modo oscuro<span class="interruptor"></span></button>
   <div class="campo"><label>¿Cómo te saludamos?</label>
     <div style="display:flex;gap:8px"><button class="chip-btn" data-sexo="h" style="flex:1">🙋‍♂️ Hombre</button><button class="chip-btn" data-sexo="m" style="flex:1">🙋‍♀️ Mujer</button></div></div>
-  <div class="campo"><label>Nombre</label><input id="pNombre" autocomplete="name"></div>
+  <p class="nota-chica" style="margin:0 4px 10px">Todos los datos son obligatorios, menos el apodo.</p>
+  <div class="campo" data-pcampo="nombre"><label>Nombre y apellido real <i>*</i><button type="button" class="info-nombre" data-info-nombre aria-label="¿Por qué nombre y apellido?">i</button></label><input id="pNombre" autocomplete="name" placeholder="Ej.: Ana Pérez"><div class="msg">Escribí tu nombre y tu apellido.</div></div>
   <div class="campo"><label>Apodo (opcional)</label><input id="pApodo" placeholder="¿Cómo te dicen?"></div>
-  <div class="campo"><label>Teléfono</label><input id="pTelefono" type="tel" inputmode="tel"></div>
-  <div class="campo"><label>Dirección</label><input id="pDireccion"></div>
-  <div class="campo"><label>Referencia o esquina</label><input id="pReferencia"></div>
+  <div class="campo" data-pcampo="telefono"><label>Teléfono <i>*</i></label><input id="pTelefono" type="tel" inputmode="tel" placeholder="099 123 456"><div class="msg">Escribí un teléfono válido (por ejemplo 099 123 456).</div></div>
+  <div class="campo" data-pcampo="direccion"><label>Dirección <i>*</i></label><input id="pDireccion" placeholder="Calle y número, apto."><div class="msg">Escribí la dirección.</div></div>
+  <div class="campo" data-pcampo="referencia"><label>Referencia o esquina <i>*</i></label><input id="pReferencia" placeholder="Ej.: esquina Rivera, portón negro"><div class="msg">Agregá una esquina o referencia para que el repartidor llegue.</div></div>
   <button class="boton ancho" id="btnGuardarPerfil">Guardar mis datos</button>
   <p class="nota-chica" style="text-align:center;margin-top:16px"><span id="nombreApp">Delicias de Ceci</span> · versión <span id="version">web</span></p>
 </section>
@@ -655,13 +660,34 @@ function totalAPagar() { return Math.max(0, totalCarrito() - totalDescuentos()) 
 // el Especial de hoy: primero la promo del día marcada «en el Especial»; si no hay, el de siempre
 function especialDeHoy() {
   const m = E.menu, pr = promosHoy().find(x => x.especial && producto((x.productos || [])[0]));
-  if (pr) return { prod: producto(pr.productos[0]), titulo: pr.titulo || pr.nombre || producto(pr.productos[0]).nombre, detalle: pr.detalle || textoPromo(pr), sello: selloPromo(pr) };
+  if (pr) return { prod: producto(pr.productos[0]), titulo: pr.titulo || pr.nombre || producto(pr.productos[0]).nombre, detalle: pr.detalle || textoPromo(pr), sello: selloPromo(pr),
+    fin: pr.reloj === false ? 0 : finDeHoy(pr.hasta) };
   const p0 = m.especial && producto(m.especial.producto);
   if (!p0) return null;
   const prp = promoDe(p0.id), antes = Number(p0.precioAntes) || 0, ahoraP = Number(p0.precio) || 0;
   // el sello NUNCA se escribe a mano: sale de una promo de hoy o del «precio antes» del producto
   const sello = prp ? selloPromo(prp) : antes > ahoraP && antes ? { grande: Math.round((1 - ahoraP / antes) * 100) + "%", chica: "DE DESCUENTO" } : null;
-  return { prod: p0, titulo: m.especial.titulo || p0.nombre, detalle: m.especial.detalle || "", sello };
+  return { prod: p0, titulo: m.especial.titulo || p0.nombre, detalle: m.especial.detalle || "", sello,
+    fin: m.especial.reloj === false ? 0 : finDeHoy(m.especial.hasta) };
+}
+// RELOJ DE CUENTA REGRESIVA del Especial: hasta la hora «hasta» de la promo (21:30 = cuenta hasta las 21:30 en punto)
+// o, si no tiene hora, hasta la medianoche. Se prende/apaga en el panel («Reloj de cuenta regresiva»).
+function finDeHoy(hasta) {
+  const d = ahora(), m = aMinutos(hasta), f = new Date(d);
+  if (m === null) f.setHours(24, 0, 0, 0); else f.setHours(Math.floor(m / 60), m % 60, 0, 0);
+  return f > d ? f.getTime() : 0;
+}
+let tReloj = null;
+function arrancarReloj() {
+  clearInterval(tReloj);
+  const r = $("#especial .reloj"); if (!r) return;
+  const tic = () => {
+    const falta = Math.max(0, Number(r.dataset.fin) - ahora().getTime());
+    if (!falta) { clearInterval(tReloj); pintarInicio(); return; }   // terminó: el Especial pasa al que sigue
+    const s = Math.floor(falta / 1000), dos = n => String(n).padStart(2, "0");
+    r.querySelector("b").textContent = `${dos(Math.floor(s / 3600))}:${dos(Math.floor(s / 60) % 60)}:${dos(s % 60)}`;
+  };
+  tic(); tReloj = setInterval(tic, 1000);
 }
 function costoEnvio() { return Number(E.menu.negocio.costoEnvio) || 0; }
 function unidades() { return E.carrito.reduce((s, it) => s + it.cantidad, 0); }
@@ -779,6 +805,7 @@ function pintarInicio() {
     <div class="especial tocable" data-prod="${esc(es.id)}">
       <img class="foto" ${fotoAttr(es.foto)} alt="">
       ${ed.sello ? `<div class="sello"><b>${esc(ed.sello.grande)}</b><small>${esc(ed.sello.chica)}</small></div>` : ""}
+      ${ed.fin ? `<div class="reloj" data-fin="${ed.fin}"><span>⏳</span><span><small>Termina en</small><b>--:--:--</b></span></div>` : ""}
       <div class="info">
         <div class="chip"><span style="color:var(--acento)">⚡</span> ${esc(T("especialChip"))}</div>
         <h3>${esc(ed.titulo)}</h3>
@@ -786,6 +813,7 @@ function pintarInicio() {
         <button class="boton" data-prod="${esc(es.id)}">${esc(T("botonEspecial"))} <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.4" stroke-linecap="round"><path d="M5 12h14m-6-6 6 6-6 6"/></svg></button>
       </div>
     </div><div class="puntos"><i></i><i></i><i></i></div>` : "";
+  arrancarReloj();
   $("#avisoEjemplo").hidden = !m.ejemplo;
   pintarSorteo();
   pintarPopulares();
@@ -966,6 +994,8 @@ function pintarEntrega() {
   $("#resumenEntrega").innerHTML = resumenHTML();
   $$("#entrega .campo").forEach(c => c.classList.remove("error"));
 }
+// nombre y apellido: al menos dos palabras de 2 letras o más («Ana Pérez», no «Ana» ni «A P»)
+function nombreCompleto(n) { return String(n || "").trim().split(/\s+/).filter(w => w.replace(/[^A-Za-zÁÉÍÓÚÜÑáéíóúüñ]/g, "").length >= 2).length >= 2; }
 function telefonoValido(t) { let d = String(t).replace(/\D/g, ""); if (d.startsWith("598")) d = d.slice(3); return d.length >= 8 && d.length <= 9; }
 function leerFormulario() {
   E.perfil.nombre = $("#fNombre").value.trim(); E.perfil.telefono = $("#fTelefono").value.trim();
@@ -974,7 +1004,7 @@ function leerFormulario() {
 }
 function validar() {
   const f = E.perfil, malos = [];
-  if (!f.nombre) malos.push("nombre");
+  if (!nombreCompleto(f.nombre)) malos.push("nombre");
   if (!telefonoValido(f.telefono)) malos.push("telefono");
   if (!f.direccion) malos.push("direccion");
   if (!f.referencia) malos.push("referencia");
@@ -1292,6 +1322,11 @@ document.addEventListener("click", ev => {
     else if (navigator.share) navigator.share({ text: txt, url: location.protocol.startsWith("http") ? location.href.split("?")[0] : undefined }).catch(() => {});
     else aviso("Copiá y compartí: " + p.nombre);
   }
+  if (ev.target.closest("[data-info-nombre]")) {
+    ev.preventDefault();
+    abrirHoja(`<h3>¿Por qué nombre y apellido reales?</h3><p>Para que tu pedido <b>llegue sin confusiones a vos</b>.</p><p>Y porque tu código <b>${esc(miCodigo())}</b> queda unido a tu nombre: si ganás un sorteo, el premio es tuyo y te lo entregamos a vos. 🎁</p><button class="boton ancho" data-cerrar>Entendido</button>`);
+    return;
+  }
   const bs = ev.target.closest("[data-sexo]");
   if (bs) {   // se guarda al toque, sin tener que apretar «Guardar mis datos»
     E.perfil.sexo = bs.dataset.sexo; guardar("perfil", E.perfil);
@@ -1315,12 +1350,18 @@ $("#btnReabrir").onclick = () => abrirWhatsApp(E.ultimoMensaje);
 $("#btnYaEnvie").onclick = () => { E.carrito = []; guardar("carrito", []); actualizarContador(); tab("inicio"); aviso(T("gracias") || "¡Gracias!"); };
 ["fNombre", "fApodo", "fTelefono", "fDireccion", "fReferencia", "fNota"].forEach(id =>
   document.getElementById(id).addEventListener("change", () => { leerFormulario(); guardar("perfil", E.perfil); pintarCabecera(); }));
-["fNombre", "fTelefono", "fDireccion", "fReferencia"].forEach(id =>
+["fNombre", "fTelefono", "fDireccion", "fReferencia", "pNombre", "pTelefono", "pDireccion", "pReferencia"].forEach(id =>
   document.getElementById(id).addEventListener("input", ev => ev.target.closest(".campo").classList.remove("error")));
 $("#btnGuardarPerfil").onclick = () => {
   E.perfil.nombre = $("#pNombre").value.trim(); E.perfil.apodo = $("#pApodo").value.trim(); E.perfil.telefono = $("#pTelefono").value.trim();
   E.perfil.direccion = $("#pDireccion").value.trim(); E.perfil.referencia = $("#pReferencia").value.trim();
-  if (E.perfil.telefono && !telefonoValido(E.perfil.telefono)) { aviso("Ese teléfono no parece válido"); return; }
+  const f = E.perfil, malos = [];
+  if (!nombreCompleto(f.nombre)) malos.push("nombre");
+  if (!telefonoValido(f.telefono)) malos.push("telefono");
+  if (!f.direccion) malos.push("direccion");
+  if (!f.referencia) malos.push("referencia");
+  $$("#perfil [data-pcampo]").forEach(c => c.classList.toggle("error", malos.includes(c.dataset.pcampo)));
+  if (malos.length) { aviso("Completá los datos marcados en rojo"); $(`#perfil [data-pcampo="${malos[0]}"]`).scrollIntoView({ behavior: "smooth", block: "center" }); return; }
   guardar("perfil", E.perfil); pintarPerfil(); pintarCabecera(); aviso("Datos guardados ✔");
 };
 matchMedia("(prefers-color-scheme: light)").addEventListener("change", () => E.menu && aplicarDiseno());
