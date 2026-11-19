@@ -600,7 +600,7 @@
       "visible": true
     }
   ],
-  "publicado": "2026-11-18 23:13:43",
+  "publicado": "2026-11-18 23:21:24",
   "qr": {
     "sub": "Escaneá el código con la cámara",
     "titulo": "¡Pedí desde tu celular!"
@@ -644,16 +644,32 @@
     {
       "id": "promo",
       "activa": true,
-      "tipo": "nxm",
+      "tipo": "porcentaje",
       "productos": [
-        "hamburguesa-queso"
+        "producto-nuevo"
       ],
       "dias": [],
       "especial": true,
       "nombre": "2x1",
       "lleva": 2,
       "paga": 1,
-      "titulo": "hamburgesa de elefante"
+      "titulo": "casi regalada",
+      "valor": 99
+    },
+    {
+      "id": "promo-2",
+      "activa": true,
+      "tipo": "porcentaje",
+      "productos": [
+        "refresco-cola"
+      ],
+      "dias": [
+        3,
+        4
+      ],
+      "especial": false,
+      "nombre": "20% de descuento",
+      "valor": 99
     }
   ]
 }
