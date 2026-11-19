@@ -60,6 +60,46 @@
     "producto": "pizza-muzzarella",
     "titulo": "Combo de Pizza muzzarella"
   },
+  "horario": {
+    "activo": true,
+    "dias": {
+      "0": {
+        "abre": true,
+        "desde": "19:00",
+        "hasta": "01:30"
+      },
+      "1": {
+        "abre": true,
+        "desde": "19:00",
+        "hasta": "01:30"
+      },
+      "2": {
+        "abre": true,
+        "desde": "19:00",
+        "hasta": "01:30"
+      },
+      "3": {
+        "abre": true,
+        "desde": "19:00",
+        "hasta": "01:30"
+      },
+      "4": {
+        "abre": true,
+        "desde": "19:00",
+        "hasta": "01:30"
+      },
+      "5": {
+        "abre": true,
+        "desde": "19:00",
+        "hasta": "01:30"
+      },
+      "6": {
+        "abre": true,
+        "desde": "19:00",
+        "hasta": "01:30"
+      }
+    }
+  },
   "mensaje": "🍔 *NUEVO PEDIDO · {negocio}*\nPedido N.º {numero}\n\n👤 *Nombre:* {nombre}\n📞 *Teléfono:* {telefono}\n📍 *Dirección:* {direccion}\n🧭 *Referencia:* {referencia}\n\n🛒 *Pedido:*\n{productos}\n\n💰 *TOTAL: {total}*\n🛵 Envío: {envio}\n💳 *Pago:* {pago}\n📝 *Nota:* {nota}",
   "negocio": {
     "costoEnvio": 0,
@@ -631,7 +671,7 @@
       "valor": 20
     }
   ],
-  "publicado": "2026-11-19 02:52:30",
+  "publicado": "2026-11-19 13:03:16",
   "qr": {
     "sub": "Escaneá el código con la cámara",
     "titulo": "¡Pedí desde tu celular!"
@@ -670,45 +710,5 @@
     "archivo": "video/hamburguesa.mp4",
     "portada": "video/hamburguesa.jpg",
     "titulo": ""
-  },
-  "horario": {
-    "dias": {
-      "0": {
-        "abre": true,
-        "desde": "19:00",
-        "hasta": "23:30"
-      },
-      "1": {
-        "abre": true,
-        "desde": "19:00",
-        "hasta": "23:30"
-      },
-      "2": {
-        "abre": true,
-        "desde": "19:00",
-        "hasta": "23:30"
-      },
-      "3": {
-        "abre": true,
-        "desde": "19:00",
-        "hasta": "23:30"
-      },
-      "4": {
-        "abre": true,
-        "desde": "19:00",
-        "hasta": "23:30"
-      },
-      "5": {
-        "abre": true,
-        "desde": "19:00",
-        "hasta": "23:30"
-      },
-      "6": {
-        "abre": true,
-        "desde": "19:00",
-        "hasta": "23:30"
-      }
-    },
-    "activo": true
   }
 }
