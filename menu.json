@@ -612,9 +612,8 @@
       "productos": [
         "producto-nuevo"
       ],
-      "tipo": "porcentaje",
-      "titulo": "casi regalada",
-      "valor": 99
+      "tipo": "nxm",
+      "titulo": "2x1 en Cerveza Brahama"
     },
     {
       "activa": true,
@@ -629,10 +628,10 @@
         "refresco-cola"
       ],
       "tipo": "porcentaje",
-      "valor": 99
+      "valor": 20
     }
   ],
-  "publicado": "2026-11-19 02:41:54",
+  "publicado": "2026-11-19 02:52:30",
   "qr": {
     "sub": "Escaneá el código con la cámara",
     "titulo": "¡Pedí desde tu celular!"
