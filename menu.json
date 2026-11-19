@@ -52,7 +52,7 @@
     "modo": "oscuro",
     "tamano": 100
   },
-  "ejemplo": false,
+  "ejemplo": true,
   "especial": {
     "detalle": "coca o pepsi + cerveza ",
     "etiqueta": "20%",
@@ -600,7 +600,7 @@
       "visible": true
     }
   ],
-  "publicado": "2026-11-17 16:24:10",
+  "publicado": "2026-11-18 23:13:43",
   "qr": {
     "sub": "Escaneá el código con la cámara",
     "titulo": "¡Pedí desde tu celular!"
@@ -610,12 +610,6 @@
     "categorias": true,
     "especial": true,
     "populares": true
-  },
-  "video": {
-    "activo": true,
-    "archivo": "video/hamburguesa.mp4",
-    "portada": "video/hamburguesa.jpg",
-    "titulo": ""
   },
   "sorteo": {
     "activo": true,
@@ -639,5 +633,27 @@
     "saludo": "Hola Gloton/a",
     "titulo": "Buena comida \n¡Delicias de *Ceci la Panadera!*",
     "verTodo": "Ver todo"
-  }
+  },
+  "video": {
+    "activo": true,
+    "archivo": "video/hamburguesa.mp4",
+    "portada": "video/hamburguesa.jpg",
+    "titulo": ""
+  },
+  "promos": [
+    {
+      "id": "promo",
+      "activa": true,
+      "tipo": "nxm",
+      "productos": [
+        "hamburguesa-queso"
+      ],
+      "dias": [],
+      "especial": true,
+      "nombre": "2x1",
+      "lleva": 2,
+      "paga": 1,
+      "titulo": "hamburgesa de elefante"
+    }
+  ]
 }
