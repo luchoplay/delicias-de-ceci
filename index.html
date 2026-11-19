@@ -484,7 +484,20 @@ img.foto-falta { background: var(--card2); }
     <div class="avatar" id="avatarGrande" style="width:66px;height:66px;font-size:26px">C</div>
     <div><b id="perfilNombre" style="font-size:18px">¡Hola!</b><div style="color:var(--suave);font-size:13px">Tus datos para pedir más rápido</div></div>
   </div>
+  <!-- recomendar: código propio, compartir por WhatsApp y quién te recomendó -->
+  <div id="recomendar" style="border:1px solid var(--borde);border-radius:18px;padding:14px 16px;margin-bottom:14px;background:var(--card)">
+    <b style="font-family:var(--letra-titulos);font-size:16px">🎟️ Recomendá la app</b>
+    <p id="recTexto" style="margin:6px 0 10px;color:var(--texto2);font-size:13.5px;line-height:1.45"></p>
+    <div style="display:flex;justify-content:space-between;align-items:center;gap:10px;font-size:14px">
+      <span>Tu código: <b id="miCodigo" style="letter-spacing:1px">—</b></span>
+    </div>
+    <div id="recStats" style="margin:6px 0 12px;color:var(--suave);font-size:13px"></div>
+    <button class="boton ancho wa" id="btnCompartirApp">Compartir la app por WhatsApp</button>
+    <div id="refBloque" style="margin-top:12px;font-size:13.5px"></div>
+  </div>
   <button class="opcion" id="modoPerfil" style="margin-bottom:10px;border:1px solid var(--borde);border-radius:16px;padding:12px 14px;background:var(--card)"><span class="emo">🌙</span>Modo oscuro<span class="interruptor"></span></button>
+  <div class="campo"><label>¿Cómo te saludamos?</label>
+    <div style="display:flex;gap:8px"><button class="chip-btn" data-sexo="h" style="flex:1">🙋‍♂️ Hombre</button><button class="chip-btn" data-sexo="m" style="flex:1">🙋‍♀️ Mujer</button></div></div>
   <div class="campo"><label>Nombre</label><input id="pNombre" autocomplete="name"></div>
   <div class="campo"><label>Apodo (opcional)</label><input id="pApodo" placeholder="¿Cómo te dicen?"></div>
   <div class="campo"><label>Teléfono</label><input id="pTelefono" type="tel" inputmode="tel"></div>
@@ -545,7 +558,7 @@ window.FUENTES = FUENTES;
 const E = {
   menu: null, base: "",
   carrito: [], favs: new Set(),
-  perfil: { nombre: "", apodo: "", telefono: "", direccion: "", referencia: "", pago: "", nota: "", consiente: false },
+  perfil: { nombre: "", apodo: "", telefono: "", direccion: "", referencia: "", pago: "", nota: "", sexo: "" },
   historial: ["inicio"], cat: "todo", orden: "relevancia", prod: null, ultimoMensaje: "",
   modo: null,      // elección del cliente: "oscuro" / "claro" / null = lo que diga el negocio
 };
@@ -798,10 +811,18 @@ function pintarVideo() {
   } else { const p = v.play(); if (p && p.catch) p.catch(() => {}); }
   cont.firstElementChild.onclick = () => { if (v.paused) v.play().catch(() => {}); };
 }
+// saludo del inicio según lo que eligió en el Perfil: hombre «Hola Glotón», mujer «Hola Glotona»,
+// sin elegir el saludo general del panel («Hola Gloton/a»). Los tres se pueden cambiar en el panel (Textos).
+function textoSaludo() {
+  const s = E.perfil.sexo;
+  if (s === "h") return T("saludoHombre") || "Hola Glotón";
+  if (s === "m") return T("saludoMujer") || "Hola Glotona";
+  return T("saludo") || "Hola";
+}
 function pintarPopulares() { $("#populares").innerHTML = productos().filter(p => p.popular).map(tarjetaHTML).join(""); }
 function pintarCabecera() {
   const n = E.perfil.nombre.trim().split(/\s+/)[0];
-  $("#saludo").textContent = (T("saludo") || "Hola") + (n ? `, ${n}` : "") + " 👋";
+  $("#saludo").textContent = textoSaludo() + (n ? `, ${n}` : "") + " 👋";
   $("#btnAvatar").textContent = n ? n[0].toUpperCase() : "🙂";
   $("#txtUbicacion").textContent = E.perfil.direccion.trim() || "Agregá tu dirección";
 }
@@ -1067,7 +1088,11 @@ function anotarEnUrna() {
     numero: (E.ultimoMensaje.match(/Pedido N\.º ([\w-]+)/) || [])[1] || "",
     fecha: ahoraD.toISOString(), nombre: f.nombre, apodo: f.apodo || "", telefono: f.telefono,
     direccion: f.direccion, referencia: f.referencia, pago: (pagos().find(p => p.id === f.pago) || {}).nombre || "",
-    total: totalAPagar(), productos: lineasProductos().replace(/\*/g, ""), promos: descuentos().map(d => `${d.nombre} −${plata(d.monto)}`).join(" · "),
+    total: totalAPagar(), productos: lineasProductos().replace(/\*/g, ""),
+    // el código propio y el de quien recomendó viajan también dentro de «promos» (la urna de Google guarda
+    // columnas fijas y así no hace falta tocarla); el panel los saca de ahí y los limpia
+    promos: descuentos().map(d => `${d.nombre} −${plata(d.monto)}`).join(" · ") + ` ‖yo:${miCodigo()}` + (leer("ref", "") ? ` ‖ref:${leer("ref", "")}` : ""),
+    miCodigo: miCodigo(), ref: leer("ref", ""),
     nota: f.nota || "", consentimiento: true, origen: NATIVO ? "app" : "web", version: NATIVO && window.CeciApp.version ? window.CeciApp.version() : "web",
   };
   const cola = leer("cola", []); cola.push(papel); guardar("cola", cola.slice(-30));
@@ -1105,7 +1130,81 @@ function pintarPerfil() {
   $("#pNombre").value = f.nombre; $("#pApodo").value = f.apodo || ""; $("#pTelefono").value = f.telefono; $("#pDireccion").value = f.direccion; $("#pReferencia").value = f.referencia;
   $("#perfilNombre").textContent = f.nombre ? "¡Hola, " + f.nombre.split(/\s+/)[0] + "!" : "¡Hola!";
   $("#avatarGrande").textContent = f.nombre ? f.nombre[0].toUpperCase() : "🙂";
+  $$("[data-sexo]").forEach(b => b.classList.toggle("elegido", b.dataset.sexo === f.sexo));
+  pintarRecomendar();
   aplicarDiseno();
+}
+
+// ═════════ RECOMENDAR: código propio, compartir por WhatsApp y quién te recomendó ═════════
+// Cada celular arma SU código (CECI-XXXX) la primera vez. Comparte el link del buzón con «?ref=CÓDIGO»:
+// en la web el código entra solo; en la app entra solo si el link se abre con la app (App Link)
+// o, recién instalada, tocando el link de nuevo; si no, se escribe a mano. El primer código que entra queda fijo.
+// Las chances NO salen de «Compartiste N veces» (eso no prueba nada): salen de amigos con pedido confirmado (panel).
+const LETRAS_COD = "ABCDEFGHJKLMNPQRSTUVWXYZ23456789";
+function miCodigo() {
+  let c = leer("micodigo", "");
+  if (!/^CECI-[A-Z2-9]{4}$/.test(c)) {
+    const r = (window.crypto && crypto.getRandomValues) ? crypto.getRandomValues(new Uint8Array(4)) : [0, 0, 0, 0].map(() => Math.random() * 256 | 0);
+    c = "CECI-" + Array.from(r, b => LETRAS_COD[b % LETRAS_COD.length]).join("");
+    guardar("micodigo", c);
+  }
+  return c;
+}
+function normCodigo(t) {
+  const m = String(t || "").toUpperCase().replace(/[^A-Z0-9]/g, "").match(/^(?:CECI)?([A-Z2-9]{4})$/);
+  return m ? "CECI-" + m[1] : "";
+}
+function ponerRef(t, avisar) {
+  const c = normCodigo(t);
+  if (!c) { if (avisar) aviso("Ese código no parece válido (es tipo CECI-AB12)"); return false; }
+  if (c === miCodigo()) { if (avisar) aviso("Ese es tu propio código 🙂"); return false; }
+  if (leer("ref", "")) return false;                 // el primero que entra queda fijo
+  guardar("ref", c);
+  if (avisar) aviso(`🎟️ Listo: te recomendó ${c}`);
+  if ($("#perfil").classList.contains("activa")) pintarRecomendar();
+  return true;
+}
+window.ceciRef = c => ponerRef(c, true);              // la app avisa cuando se abre con un link «?ref=»
+function linkRecomendar() { return BUZON + "?ref=" + miCodigo(); }
+function compartirApp() {
+  const txt = `¡Mirá ${E.menu.negocio.nombre}! 😋 Pedí rico y fácil desde la app: ${linkRecomendar()}`;
+  guardar("compartidas", (Number(leer("compartidas", 0)) || 0) + 1);
+  if (NATIVO && window.CeciApp.compartirWhatsApp) window.CeciApp.compartirWhatsApp(txt);
+  else if (NATIVO && window.CeciApp.compartir) window.CeciApp.compartir(txt);
+  else if (VISTA) aviso("Vista previa: acá se abriría WhatsApp para compartir");
+  else window.open("https://api.whatsapp.com/send?text=" + encodeURIComponent(txt), "_blank");
+  pintarRecomendar();
+}
+function pintarRecomendar() {
+  if (!E.menu) return;
+  const s = sorteo(), veces = Number(leer("compartidas", 0)) || 0, ref = leer("ref", "");
+  const amigos = Number((E.referidos || {})[miCodigo()]) || 0;
+  $("#miCodigo").textContent = miCodigo();
+  $("#recTexto").textContent = s.activo
+    ? "Mandale la app a tus amigos. Cada amigo que hace su primer pedido con tu código te suma 1 chance en el sorteo de la semana."
+    : "Mandale la app a tus amigos: les llega con tu código y así sabemos que vinieron de tu parte.";
+  $("#recStats").textContent = `Compartiste ${veces} ${veces === 1 ? "vez" : "veces"} · ${amigos} ${amigos === 1 ? "amigo ya pidió" : "amigos ya pidieron"} con tu código`;
+  $("#refBloque").innerHTML = ref
+    ? `<span style="color:var(--suave)">Te recomendó: <b>${esc(ref)}</b> ✔</span>`
+    : `<label style="color:var(--suave)">¿Te recomendó alguien? Escribí su código</label>
+       <div style="display:flex;gap:8px;margin-top:6px"><input id="refManual" placeholder="CECI-AB12" autocapitalize="characters" style="flex:1"><button class="boton" id="btnRefManual">Listo</button></div>`;
+}
+async function cargarReferidos() {
+  try {
+    const r = await conTiempo(fetch((NATIVO ? BUZON : "") + "referidos.json?t=" + Date.now(), { cache: "no-store" }), 8000);
+    if (r.ok) { E.referidos = await r.json(); guardar("referidos", E.referidos); }
+  } catch (e) { E.referidos = leer("referidos", {}); }
+  if ($("#perfil").classList.contains("activa")) pintarRecomendar();
+}
+// la primera vez que se abre la app instalada: si vino de un link, que lo toque de nuevo (o escriba el código)
+function preguntarRecomendado() {
+  if (!NATIVO || VISTA || leer("ref", "") || leer("preguntoRef", false)) return;
+  guardar("preguntoRef", true);
+  abrirHoja(`<h3>¿Te recomendó alguien? 🎟️</h3>
+    <p>Si te mandaron un link de ${esc(E.menu.negocio.nombre)} por WhatsApp, <b>tocalo de nuevo ahora</b>: se abre acá y queda anotado quién te recomendó.</p>
+    <p style="color:var(--suave)">O escribí su código:</p>
+    <div style="display:flex;gap:8px"><input id="refPrimera" placeholder="CECI-AB12" autocapitalize="characters" style="flex:1"><button class="boton" id="btnRefPrimera">Listo</button></div>
+    <div style="height:10px"></div><button class="boton ancho gris" data-cerrar>Nadie, solo quiero pedir</button>`);
 }
 
 // ═════════ HOJAS ═════════
@@ -1193,6 +1292,15 @@ document.addEventListener("click", ev => {
     else if (navigator.share) navigator.share({ text: txt, url: location.protocol.startsWith("http") ? location.href.split("?")[0] : undefined }).catch(() => {});
     else aviso("Copiá y compartí: " + p.nombre);
   }
+  const bs = ev.target.closest("[data-sexo]");
+  if (bs) {   // se guarda al toque, sin tener que apretar «Guardar mis datos»
+    E.perfil.sexo = bs.dataset.sexo; guardar("perfil", E.perfil);
+    $$("[data-sexo]").forEach(b => b.classList.toggle("elegido", b === bs));
+    pintarCabecera(); aviso(`Listo: ${textoSaludo()} 👋`);
+  }
+  if (ev.target.closest("#btnCompartirApp")) compartirApp();
+  if (ev.target.closest("#btnRefManual")) { if (ponerRef($("#refManual").value, true)) pintarRecomendar(); }
+  if (ev.target.closest("#btnRefPrimera")) { if (ponerRef($("#refPrimera").value, true)) cerrarHojas(); }
   if (ev.target.closest("#btnHablar")) {
     cerrarHojas();
     const n = String(E.menu.negocio.whatsapp).replace(/\D/g, "");
@@ -1329,6 +1437,15 @@ async function arrancar() {
   try { await cargarMenu(); }
   catch (e) { document.body.innerHTML = `<p style="padding:30px;color:#fff">No se pudo leer el menú (menu.json): ${esc(e.message)}</p>`; return; }
   setTimeout(() => $("#bienvenida").classList.add("fuera"), window.__sinBienvenida ? 0 : 1500);
+  // quién lo recomendó: en la web viene en la dirección (?ref=); en la app, si se abrió con el link
+  miCodigo();
+  const refWeb = new URLSearchParams(location.search).get("ref");
+  if (refWeb) { ponerRef(refWeb, false); try { history.replaceState(null, "", location.pathname); } catch (e) {} }
+  const refApp = NATIVO && window.CeciApp.refPendiente ? window.CeciApp.refPendiente() : "";
+  if (refApp) ponerRef(refApp, true);
+  E.referidos = leer("referidos", {});
+  cargarReferidos();
+  setTimeout(preguntarRecomendado, window.__sinBienvenida ? 300 : 2200);
 }
 // vista previa del panel: el panel manda los datos del borrador y a qué pantalla ir
 window.addEventListener("message", ev => {
