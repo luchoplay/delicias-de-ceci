@@ -507,7 +507,7 @@ img.foto-falta { background: var(--card2); }
 <div id="actualizar" hidden>
   <img src="fotos/logo.png" alt="">
   <h1>Hay una versión nueva</h1>
-  <p>Para seguir pidiendo con los precios y productos al día, actualizá la app. Tarda unos segundos y no perdés tu carrito ni tus datos.</p>
+  <p>Para seguir pidiendo con los precios y productos al día, actualizá la app. Se baja con el navegador: cuando termine, tocá el archivo e instalalo. No perdés tu carrito ni tus datos.</p>
   <button class="boton ancho" id="btnActualizar">Actualizar ahora</button>
   <p class="nota-chica" id="estadoActualizar"></p>
 </div>
@@ -1314,7 +1314,8 @@ function revisarVersion() {
 }
 function actualizarApp() {
   const archivo = (E.menu.app && E.menu.app.apk) || "Delicias-de-Ceci.apk";
-  $("#estadoActualizar").textContent = "Bajando la versión nueva…";
+  $("#estadoActualizar").textContent = "Abriendo la descarga…";
+  // la app abre la descarga en el navegador (sin instalador propio: Play Protect lo marcaba «dañino»)
   window.CeciApp.actualizar(BUZON + archivo + "?t=" + Date.now());
 }
 window.ceciActualizacion = txt => { const e = $("#estadoActualizar"); if (e) e.textContent = txt; aviso(txt); };
